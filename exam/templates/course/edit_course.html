@@ -1,0 +1,25 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load crispy_forms_tags %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/static/css/group.css" rel="stylesheet" />
+    <title>Edit Course</title>
+</head>
+<body>
+    <h1>{{course.Course_Name}} Course</h1>
+    <div class="container">
+        <form method="POST">
+            {% csrf_token %}
+            {{form|crispy}}
+
+            <input type="Submit" class="btn btn-primary">
+            <button class="btn btn-warning"><a href="{% url 'add_course_page' %}">Cancel</a></button>
+        </form>
+    </div>
+</body>
+</html>
+    

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load crispy_forms_tags %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!--     Fonts and icons     -->
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/static/assets/css/material-dashboard.css?v=2.1.2" rel="stylesheet" />
+    <title>Faculty</title>
+</head>
+<body>
+
+    <h1>Faculty Details</h1>
+
+    <!-- Display Messages  -->
+    {% if msg %}
+        {% for message in messages %}
+            <div class="alert alert-success" role="alert">
+                {{msg}}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+        ADD FACULTY
+    </button>
+
+    <a href="{% url 'faculty_pdf_page' %}">
+        <button class="btn btn-info">Download Pdf</button>
+    </a>
+    <table class="table table-striped">
+        <thead>
+            <th scope="col">Faculty id</th>
+            <th scope="col">Faculty Name</th>
+            <th scope="col">Faculty Coordinator</th>
+        </thead>
+        <tbody>
+            {% for faculty in faculty %}
+                <tr>
+                    <th scope="row">{{faculty.id}}</th>
+                    <td>{{faculty.Faculty_Name}}</td>
+                    <td>{{faculty.Faculty_Coordinator}}</td>
+                    <td>
+                        <a href="{% url 'edit_faculty_page' faculty.id %}">
+                            <i class="material-icons">edit</i>
+                        </a> |
+                        <a href="{% url 'delete_faculty_page' faculty.id %}"
+                            onclick="return confirm('Press OK to delete this Faculty')">
+                            <i class="material-icons">delete_sweep</i>
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <button class="btn btn-success"><a href="{% url 'home_page' %}">Home</a></button>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Add Another Faculty</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <form method="POST">
+                {% csrf_token %}
+                {{form|crispy}}
+                <button class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% include 'includes/scripts.html' %}
+
+</body>
+</html>

@@ -1,0 +1,35 @@
+
+
+<html>
+
+    <h2>Student Form</h2>
+
+  <form method="post" id="studentForm" data-courses-url="{% url 'ajax_load_courses' %}" novalidate>
+    {% csrf_token %}
+    <table>
+      {{ form.as_table }}
+    </table>
+    <button type="submit">Save</button>
+    <a href="{% url 'student_changelist' %}">Nevermind</a>
+  </form>
+
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script>
+    $("#id_faculty").change(function () {
+      var url = $("#studentForm").attr("data-courses-url");  // get the url of the `load_courses` view
+      var facultyId = $(this).val();  // get the selected faculty ID from the HTML input
+
+      $.ajax({                       // initialize an AJAX request
+        url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-courses/)
+        data: {
+          'faculty': facultyId       // add the faculty id to the GET parameters
+        },
+        success: function (data) {   // `data` is the return of the `load_courses` view function
+          $("#id_course").html(data);  // replace the contents of the course input with the data that came from the server
+        }
+      });
+
+    });
+  </script>
+
+</html>

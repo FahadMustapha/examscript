@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load crispy_forms_tags %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link href="/static/assets/css/material-dashboard.css?v=2.1.2" rel="stylesheet" />
+    <!--   <link href="/static/css/group.css" rel="stylesheet" />   -->
+
+    <title>COURSE</title>
+</head>
+<body>
+
+    <h1>Course Details</h1>
+
+    <!-- Display Messages  -->
+    {% if msg %}
+        {% for message in messages %}
+            <div class="alert alert-success" role="alert">
+                {{msg}}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+        ADD COURSE
+    </button>
+
+    <a href="{% url 'course_pdf_page' %}">
+        <button class="btn btn-info">Download Pdf</button>
+    </a>
+    <table class="table table-striped">
+        <thead>
+            <th scope="col">Course id</th>
+            <th scope="col">Faculty</th>
+            <th scope="col">Course Name</th>
+            <th scope="col">Course Code</th>
+            <th scope="col">Course Duration</th>
+        </thead>
+        <tbody>
+            {% for course in course %}
+                <tr>
+                    <th scope="row">{{course.id}}</th>
+                    <td>{{course.Faculty}}</td>
+                    <td>{{course.Course_Name}}</td>
+                    <td>{{course.Course_Code}}</td>
+                    <td>{{course.Course_Duration}}</td>
+                    <td><a href="{% url 'edit_course_page' course.id %}">
+                            <i class="material-icons">edit</i>
+                        </a> |
+                        <a href="{% url 'delete_course_page' course.id %}"
+                            onclick="return confirm('Press OK to delete this Course')">
+                            <i class="material-icons">delete_sweep</i>
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <button class="btn btn-success"><a href="{% url 'home_page' %}">Home</a></button>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Add Another Course</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <form method="POST">
+                {% csrf_token %}
+                {{form|crispy}}
+                <button class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% include 'includes/scripts.html' %}
+
+</body>
+</html>
