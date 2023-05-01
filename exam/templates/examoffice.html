@@ -32,7 +32,32 @@
                 </div>
             </div>
             <div class="results">
-                <center><h3>RESULTS FOR {{student.Registration_Number}} SELECTED STUDENT</h3></center>              
+                <center><h3>RESULTS FOR {{student.Registration_Number}} SELECTED STUDENT</h3></center>
+                <table class="table table-striped">
+                    <thead>
+                        <th scope="col">Student id</th>
+                        <th scope="col">Student RegNo.</th>
+                    </thead>
+                    <tbody>
+                        {% for students in students %}
+                            <tr>
+                                <th scope="row">{{student.id}}</th>
+                                <td>{{student.Registration_Number}}</td>
+                                <td>{{student.Faculty}}</td>
+                                <td>{{student.Course}}</td>
+                                <td>{{student.Phone_Number}}</td>
+                                <td><a href="{% url 'edit_subject_page' subjects.id %}">
+                                        <i class="material-icons">edit</i>
+                                    </a> |
+                                    <a href="{% url 'delete_subject_page' subjects.id %}"
+                                        onclick="return confirm('Press OK to delete this Subject')">
+                                        <i class="material-icons">delete_sweep</i>
+                                    </a>
+                                </td>                            
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>         
             </div>
         </div>
     </div>

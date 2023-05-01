@@ -7,7 +7,7 @@ from exam.utils import render_to_pdf
 from django.http import HttpResponse
 from django.contrib import messages
 from exam.forms import FacultyForm, CourseForm, StudentForm, RemarkForm, ExamOfficeForm
-from .models import Faculty, Course, Student
+from .models import Faculty, Course, Student, ExamOffice, Remark, SessionList, StudySession
 
 # Create your views here.
 def home_view(request):
@@ -143,65 +143,46 @@ def delete_course_view(request, course_id):
     return redirect(add_course_view)
 #Course form
 
-"""
-#Student Form
-def student_view(request):
-    message = ""
-    if request.method == "POST":
-        student_form = StudentForm(request.POST)
-        if student_form.is_valid():
-            student_form.save()
-            message="Student Added"
-    else:
-        student_form = StudentForm()
-
-    messages.success(request, message)
-
-    context ={
-        'form':student_form,
-        'msg' : message,
-    }
-    return render(request, "student.html", context)
-"""
-
 
 class StudentListView(ListView):
     model = Student
     context_object_name = 'people'
 
+
 class StudentCreateView(CreateView):
     model = Student
     form_class = StudentForm
-    success_url = reverse_lazy('student_changelist')
+    success_url = reverse_lazy('remark_page')
 
 class StudentUpdateView(UpdateView):
     model = Student
     form_class = StudentForm
     success_url = reverse_lazy('student_changelist')
 
+
 def load_courses(request):
     faculty_id = request.GET.get('faculty')
-    courses = Course.objects.filter(faculty_id=faculty_id).order_by('faculty_name')
+    courses = Course.objects.filter(Faculty_id=faculty_id).order_by('Course_Name')
     return render(request, 'course_dropdown_list_options.html', {'courses': courses})
 
 
+
 #Remark Form
-def remark_view(request):
-    message = ""
-    if request.method == "POST":
-        remark_form = RemarkForm(request.POST)
-        if remark_form.is_valid():
-            remark_form.save()
-            message="Form submitted"
-    else:
-        remark_form = RemarkForm()
+class RemarkListView(ListView):
+    model = Remark
+    context_object_name = 'people'
 
-    messages.success(request, message)
+class RemarkCreateView(CreateView):
+    model = Remark
+    form_class = RemarkForm
+    success_url = reverse_lazy('session_changelist')
 
-    context ={
-        'form':remark_form,
-    }
-    return render(request, "remark.html", context)
+def load_sessions(request):
+    studysession_id = request.GET.get('Academic_session')
+    sessions = SessionList.objects.filter(Session_id=studysession_id).order_by('Session_list')
+    return render(request, 'sessions_dropdown_list_options.html', {'sessions': sessions})
+
+
 
 
 #Exam office Form
