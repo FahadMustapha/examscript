@@ -1,6 +1,6 @@
 
 from django.forms import ModelForm
-from .models import Faculty, Course, Student, Remark, ExamOffice, SessionList
+from .models import Faculty, Course, Student, Remark, ExamOffice, SessionList, AR, Lecturer, Payment
 from django import forms
 
 class StudentForm(forms.ModelForm):
@@ -38,21 +38,63 @@ class ExamOfficeForm(ModelForm):
         fields = '__all__'
 
 
-
 class RemarkForm(forms.ModelForm):
     class Meta:
         model = Remark
-        fields = ('Course_Code','Course_Name','Year_Of_Exam', 'Academic_session', 'Semester_l_Quarter', 'Session')
+        fields = ('Paper_Code','Paper_Name','Year_Of_Exam', 'Academic_session', 'SemesterQuarter', 'Session')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['Semester_l_Quarter'].queryset = SessionList.objects.none()
+        self.fields['SemesterQuarter'].queryset = SessionList.objects.none()
 
         if 'StudySession' in self.data:
             try:
                 studysession_id = int(self.data.get('StudySession'))
-                self.fields['Semester_l_Quarter'].queryset = SessionList.objects.filter(studysession_id=studysession_id).order_by('Session_list')
+                self.fields['SemesterQuarter'].queryset = SessionList.objects.filter(StudySession_id=studysession_id).order_by('Session_list')
             except (ValueError, TypeError):
-                pass  # invalid input from the client; ignore and fallback to empty City queryset
+                pass  # invalid input from the client; ignore and fallback to empty semester queryset
         elif self.instance.pk:
-            self.fields['Semester_l_Quarter'].queryset = self.instance.StudySession.sessionlist_set.order_by('Session_list')
+            self.fields['SemesterQuarter'].queryset = self.instance.StudySession.SessionList_set.order_by('Session_list')
+            
+
+class ARForm(forms.ModelForm):
+    class Meta:
+        model = AR
+        fields = ( 'Faculty', 'Course', 'Lecturer')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['Course'].queryset = Course.objects.none()
+
+        if 'Faculty' in self.data:
+            try:
+                faculty_id = int(self.data.get('Faculty'))
+                self.fields['course'].queryset = Course.objects.filter(Faculty_id=faculty_id).order_by('Course_Name')
+            except (ValueError, TypeError):
+                pass  # invalid input from the client; ignore and fallback to empty Course queryset
+        elif self.instance.pk:
+            self.fields['Course'].queryset = self.instance.Faculty.course_set.order_by('Course_Name')
+
+class LecturerForm(ModelForm):
+    class Meta:
+        model = Lecturer
+        fields = ('Name', 'Faculty', 'Course')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['Course'].queryset = Course.objects.none()
+
+        if 'Faculty' in self.data:
+            try:
+                faculty_id = int(self.data.get('Faculty'))
+                self.fields['Course'].queryset = Course.objects.filter(Faculty_id=faculty_id).order_by('Course_Name')
+            except (ValueError, TypeError):
+                pass  # invalid input from the client; ignore and fallback to empty Course queryset
+        elif self.instance.pk:
+            self.fields['Course'].queryset = self.instance.Faculty.course_set.order_by('Course_Name')
+
+
+class PaymentForm(ModelForm):
+    class Meta:
+        model = Payment
+        fields = '__all__'

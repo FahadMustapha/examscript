@@ -6,8 +6,8 @@ from django.shortcuts import render, redirect
 from exam.utils import render_to_pdf
 from django.http import HttpResponse
 from django.contrib import messages
-from exam.forms import FacultyForm, CourseForm, StudentForm, RemarkForm, ExamOfficeForm
-from .models import Faculty, Course, Student, ExamOffice, Remark, SessionList, StudySession
+from exam.forms import FacultyForm, CourseForm, StudentForm, RemarkForm, ExamOfficeForm, ARForm, LecturerForm, PaymentForm
+from .models import Faculty, Course, Student, ExamOffice, Remark, SessionList, StudySession, AR, Lecturer, Payment
 
 # Create your views here.
 def home_view(request):
@@ -159,30 +159,31 @@ class StudentUpdateView(UpdateView):
     form_class = StudentForm
     success_url = reverse_lazy('student_changelist')
 
-
 def load_courses(request):
     faculty_id = request.GET.get('faculty')
     courses = Course.objects.filter(Faculty_id=faculty_id).order_by('Course_Name')
     return render(request, 'course_dropdown_list_options.html', {'courses': courses})
 
 
-
 #Remark Form
 class RemarkListView(ListView):
     model = Remark
-    context_object_name = 'people'
+    context_object_name = 'remark'
 
 class RemarkCreateView(CreateView):
     model = Remark
     form_class = RemarkForm
-    success_url = reverse_lazy('session_changelist')
+    success_url = reverse_lazy('payment_page')
+
+class RemarkUpdateView(UpdateView):
+    model = Remark
+    form_class = RemarkForm
+    success_url = reverse_lazy('remark_page')
 
 def load_sessions(request):
     studysession_id = request.GET.get('Academic_session')
     sessions = SessionList.objects.filter(Session_id=studysession_id).order_by('Session_list')
     return render(request, 'sessions_dropdown_list_options.html', {'sessions': sessions})
-
-
 
 
 #Exam office Form
@@ -203,3 +204,40 @@ def examoffice_view(request):
         'msg' : message,
     }
     return render(request, "examoffice.html", context)
+
+class ARCreateView(CreateView):
+    model = AR
+    form_class = ARForm
+    success_url = reverse_lazy('ar_page')
+
+class ARUpdateView(UpdateView):
+    model = AR
+    form_class = ARForm
+    success_url = reverse_lazy('ar_changelist')
+
+
+class LecturerCreateView(CreateView):
+    model = Lecturer
+    form_class = LecturerForm
+    success_url = reverse_lazy('lecturer_page')
+
+
+"""payment view"""
+def payment_view(request):
+    message = ""
+    if request.method == "POST":
+        payment_form = PaymentForm(request.POST)
+        if payment_form.is_valid():
+            payment_form.save()
+            message="Payment received"
+    else:
+        payment_form = PaymentForm()
+
+    messages.success(request, message)
+
+    context ={
+        'form':payment_form,
+        'msg' : message,
+    }
+    return render(request, "payment.html", context)
+
