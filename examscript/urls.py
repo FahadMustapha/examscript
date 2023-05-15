@@ -35,7 +35,7 @@ urlpatterns = [
     path('course/course_pdf/', course_pdf_view, name="course_pdf_page"),
 
     path('ar/', views.ARCreateView.as_view(), name='ar_add'),
-    path('<int:pk>/', views.ARUpdateView.as_view(), name='ar_change'),
+    path('ajax/load-lecturers/', views.load_lecturers, name='ajax_load_lecturers'),
 
-    path('lecturer/', views.LecturerCreateView.as_view(), name='lecturer_page'),
+    path('lecturer/', views.LecturerCreateView.as_view(), name='lecturer_page'),    
 ]

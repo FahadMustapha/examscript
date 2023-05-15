@@ -158,11 +158,11 @@ class StudentUpdateView(UpdateView):
     model = Student
     form_class = StudentForm
     success_url = reverse_lazy('student_changelist')
-
 def load_courses(request):
     faculty_id = request.GET.get('faculty')
     courses = Course.objects.filter(Faculty_id=faculty_id).order_by('Course_Name')
     return render(request, 'course_dropdown_list_options.html', {'courses': courses})
+
 
 
 #Remark Form
@@ -210,16 +210,15 @@ class ARCreateView(CreateView):
     form_class = ARForm
     success_url = reverse_lazy('ar_page')
 
-class ARUpdateView(UpdateView):
-    model = AR
-    form_class = ARForm
-    success_url = reverse_lazy('ar_changelist')
-
-
 class LecturerCreateView(CreateView):
     model = Lecturer
     form_class = LecturerForm
     success_url = reverse_lazy('lecturer_page')
+
+def load_lecturers(request):
+    course_id = request.GET.get('course')
+    lecturers = Lecturer.objects.filter(Course_id=course_id).order_by('Name')
+    return render(request, 'lecturers_dropdown.html', {'lecturers': lecturers})
 
 
 """payment view"""

@@ -1,0 +1,6 @@
+
+
+<option value="">---------</option>
+{% for lecturer in lecturers %}
+    <option value="{{ lecturer.pk }}">{{ lecturer.Name }}</option>
+{% endfor %}

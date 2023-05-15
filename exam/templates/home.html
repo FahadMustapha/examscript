@@ -12,19 +12,29 @@
     <h1></h1>
     <div class="main">
         <div class="heading">
+            <img src="/static/image/logo-white.png" alt="error" style="height: 100px; width: 95%;">
             <div class="head">
                 <h1>Exam Complaint Application Platform</h1>
             </div>
-            <div class="homeButtons">
-                <a href="{% url 'student_add' %}"><button>EXAM REMARK</button></a>
-            </div>
-            <div class="homeButtons">
-                <a href=""><button>MISSING MARKS</button></a>
-            </div>
-            <div class="homeButtons">
-                <a href=""><button>RETAKE/TAKE</button></a>
-            </div>
+            
+            <center>
+                <div class="homelinks">
+                    <div style="width: 300px;">
+                        <a href="{% url 'student_add' %}">
+                            <button class="homeButtons">EXAM RE-MARK</button>
+                        </a>
+                    </div>
+                    <div>
+                        <a href=""><button class="btn homeButtons" >MISSING MARKS</button>
+                        </a>
+                    </div>
+                    <div>
+                        <a href=""><button class="btn homeButtons" >RE-TAKE / TAKE</button>
+                        </a>
+                    </div>
+                </div>
+            </center>
         </div>
-    
+            
 </body>
 </html>

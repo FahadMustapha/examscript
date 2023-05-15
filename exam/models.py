@@ -80,6 +80,7 @@ class Remark(models.Model):
 #exam office model
 class ExamOffice(models.Model):
     Registration_Number = models.CharField(max_length=100)
+    Paper_code = models.CharField(max_length=20)
 
 
 class Lecturer(models.Model):
