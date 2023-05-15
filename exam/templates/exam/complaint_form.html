@@ -9,7 +9,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="/static/css/group.css" rel="stylesheet" />
-    <title>Remark</title>
+    <title>complaint</title>
 </head>
 <body class="student">
     
@@ -19,29 +19,29 @@
                 <h1>Complaint Registration Form</h1>
             </div>
             <div class="form-control">
-                <form method="POST" id="remarkForm" data-sessions-url="{% url 'ajax_load_sessions' %}" novalidate>
-                    {% csrf_token %}
-                    {{form|crispy}}
-                    <button class="btn btn-info"><a href="{% url 'student_add' %}">BACK</a></button>
-                    <button type="submit" class="btn btn-primary">SUBMIT</button>
-                </form>
+              <form method="POST" id="complaintForm" data-session-url="{% url 'ajax_load_session' %}" novalidate>
+                  {% csrf_token %}
+                  {{form|crispy}}
+                  <button class="btn btn-info"><a href="{% url 'student_add' %}">BACK</a></button>
+                  <button type="submit" class="btn btn-primary">SUBMIT</button>
+              </form>
             </div>
         
     </div>
 
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script>
-      $("#id_Academic_session").change(function () {
-        var url = $("#remarkForm").attr("data-sessions-url");
-        var studysessionId = $(this).val();
-  
+      $("#id_Study_mode").change(function () {
+        var url = $("#complaintForm").attr("data-session-url");
+        var study_modeId = $(this).val();
+        
         $.ajax({
           url: url,
           data: {
-            'studysession': studysessionId
+            'study': study_modeId
           },
           success: function (data) {
-            $("#id_SemesterQuarter").html(data);
+            $("#id_Semester").html(data);
           }
         });
   

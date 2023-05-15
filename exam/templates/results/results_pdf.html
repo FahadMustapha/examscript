@@ -1,0 +1,28 @@
+<html>
+<head>
+    <title>Download Pdf</title>
+</head>
+<body>
+    <h3><center>Course List</center></h3>
+    <table class="table table-striped">
+        <thead>
+            <th scope="col">Course id</th>
+            <th scope="col">Faculty</th>
+            <th scope="col">Course Name</th>
+            <th scope="col">Course Code</th>
+            <th scope="col">Course Duration</th>
+        </thead>
+        <tbody>
+            {% for course in course %}
+                <tr>
+                    <th scope="row">{{faculty.id}}</th>
+                    <td>{{faculty.Faculty}}</td>
+                    <td>{{faculty.Course_Name}}</td>
+                    <td>{{faculty.Course_Code}}</td>
+                    <td>{{faculty.Course_Duration}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

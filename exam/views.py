@@ -1,13 +1,18 @@
 
 from django.views.generic import ListView, CreateView, UpdateView
 from django.urls import reverse_lazy
+from django.http import JsonResponse
 
+from django.template import loader
+from django.db.models import Q
 from django.shortcuts import render, redirect
 from exam.utils import render_to_pdf
 from django.http import HttpResponse
 from django.contrib import messages
-from exam.forms import FacultyForm, CourseForm, StudentForm, RemarkForm, ExamOfficeForm, ARForm, LecturerForm, PaymentForm
-from .models import Faculty, Course, Student, ExamOffice, Remark, SessionList, StudySession, AR, Lecturer, Payment
+
+from exam.forms import FacultyForm, CourseForm, StudentForm, ComplaintForm, ExamofficeForm, ARForm, LecturerForm, FileUploadForm
+from .models import Faculty, Course, Student, ExamOffice, Complaint, AR, Lecturer, Payment
+
 
 # Create your views here.
 def home_view(request):
@@ -25,7 +30,7 @@ def add_faculty_view(request):
     else:
         faculty_form = FacultyForm()
 
-    messages.success(request, message)    
+    messages.success(request, message)
 
     faculty = Faculty.objects.all()
 
@@ -147,13 +152,10 @@ def delete_course_view(request, course_id):
 class StudentListView(ListView):
     model = Student
     context_object_name = 'people'
-
-
 class StudentCreateView(CreateView):
     model = Student
     form_class = StudentForm
     success_url = reverse_lazy('remark_page')
-
 class StudentUpdateView(UpdateView):
     model = Student
     form_class = StudentForm
@@ -165,51 +167,70 @@ def load_courses(request):
 
 
 
-#Remark Form
-class RemarkListView(ListView):
-    model = Remark
-    context_object_name = 'remark'
 
-class RemarkCreateView(CreateView):
-    model = Remark
-    form_class = RemarkForm
-    success_url = reverse_lazy('payment_page')
-
-class RemarkUpdateView(UpdateView):
-    model = Remark
-    form_class = RemarkForm
-    success_url = reverse_lazy('remark_page')
-
-def load_sessions(request):
-    studysession_id = request.GET.get('Academic_session')
-    sessions = SessionList.objects.filter(Session_id=studysession_id).order_by('Session_list')
-    return render(request, 'sessions_dropdown_list_options.html', {'sessions': sessions})
-
-
-#Exam office Form
-def examoffice_view(request):
-    message = ""
+def complaint_view(request):
+    message =""
     if request.method == "POST":
-        examoffice_form = ExamOfficeForm(request.POST)
-        if examoffice_form.is_valid():
-            examoffice_form.save()
-            message="Student Added"
+        complaint_form = ComplaintForm(request.POST)
+        if complaint_form.is_valid():
+            complaint_form.save()
+            message="Complaint Submitted Successfully"
+            
     else:
-        examoffice_form = ExamOfficeForm()
+        complaint_form = ComplaintForm()
 
-    messages.success(request, message)
+    messages.success(request, message)    
+
+    complaint = Complaint.objects.all()
 
     context ={
-        'form':examoffice_form,
-        'msg' : message,
+        'form':complaint_form,
+        'msg':message,
+        'complaint':complaint, 
     }
-    return render(request, "examoffice.html", context)
+    return render(request, "complaint/complaint.html", context)
+
+def complaint_details_view(request, complaint_id):
+    message =""
+    complaint = Complaint.objects.get(id=complaint_id)
+
+    if request.method == "POST":
+        complaint_form = ComplaintForm(request.POST, instance= complaint)
+
+        if complaint_form.is_valid():
+            complaint_form.save()
+            message = "Changes saved successfully"
+        else:
+            message = "Entered invalid data"
+        messages.success(request, message)
+
+    else:
+        complaint_form = ComplaintForm(instance=complaint)
+    
+    context = {
+        'form': complaint_form,
+        'complaint': complaint,
+        'msg': message,        
+    }
+    return render(request, "complaint/edit_complaint.html", context)
+
+    
+def complaint_pdf_view(request):
+    complaint = Complaint.objects.all()
+
+    context = {
+        'complaint': complaint
+    }
+    pdf = render_to_pdf("complaint/complaint_pdf.html", context)
+
+    return HttpResponse(pdf, content_type = "application/pdf")
+
+
 
 class ARCreateView(CreateView):
     model = AR
     form_class = ARForm
     success_url = reverse_lazy('ar_page')
-
 class LecturerCreateView(CreateView):
     model = Lecturer
     form_class = LecturerForm
@@ -221,7 +242,7 @@ def load_lecturers(request):
     return render(request, 'lecturers_dropdown.html', {'lecturers': lecturers})
 
 
-"""payment view"""
+"""payment view
 def payment_view(request):
     message = ""
     if request.method == "POST":
@@ -240,3 +261,62 @@ def payment_view(request):
     }
     return render(request, "payment.html", context)
 
+
+class ResultsListView(ListView):
+    model = Results
+    context_object_name = 'people'
+class ResultsCreateView(CreateView):
+    model = Results
+    form_class = ResultsForm
+    success_url = reverse_lazy('results_add')
+class ResultsUpdateView(UpdateView):
+    model = Results
+    form_class = ResultsForm
+    success_url = reverse_lazy('results_changelist')
+def load_courses(request):
+    faculty_id = request.GET.get('faculty')
+    courses = Course.objects.filter(Faculty_id=faculty_id).order_by('Course_Name')
+    return render(request, 'course_dropdown_list_options.html', {'courses': courses})
+"""
+
+
+def examoffice_view(request):
+
+    student = Student.objects.all()
+    #remark = Remark.objects.all()
+
+    form = ExamofficeForm(request.GET)
+
+    #if form.is_valid():        
+     #   regnumber = form.cleaned_data['Registration_number']
+      #  code = form.cleaned_data['Paper_Code']
+        
+       # if regnumber:
+        #    queryset = queryset.filter(Registration_number__icontains=regnumber)
+        #if code:
+        #   queryset = queryset.filter(Paper_code=code)
+    complaint = Complaint.objects.all()
+
+    context = {
+        'form': form,
+        #'queryset': queryset,
+        'complaint':complaint,
+    }
+    return render(request, 'examoffice.html', context)
+
+
+#file upload view
+def file_upload(request):
+    if request.method == 'POST':
+        form = FileUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            file = form.cleaned_data['file']
+            # Save the file to the server
+            with open('uploads/' + file.name, 'wb+') as destination:
+                for chunk in file.chunks():
+                    destination.write(chunk)
+            # Return a response to the user
+            return render(request, 'complaint/complaint.html', {'success': True})
+    else:
+        form = FileUploadForm()
+    return render(request, 'complaint/complaint.html', {'form': form})

@@ -1,0 +1,51 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load crispy_forms_tags %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>results list</title>
+</head>
+<body>
+  <h1>POPULATED STUDENTS' RESULTS</h1>
+  <p>
+    <a href="{% url 'results_add' %}">Add Student Results/Scores</a>
+  </p>
+
+  <table border="1">
+    <thead>
+      <tr>
+        <th>Registrtion Number</th>
+        <th>Faculty</th>
+        <th>Course</th>
+        <th>Year</th>
+        <th>Semester</th>
+        <th>Paper Code</th>
+        <th>Paper Name</th>
+        <th>Mark</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for results in people %}
+        <tr>
+          <td><a href="{% url 'results_change' results.pk %}">{{ results.Registration_number }}</a></td>
+          <td>{{ results.Faculty }}</td>
+          <td>{{ results.Course }}</td>
+          <td>{{ results.Year }}</td>
+          <td>{{ results.Semester }}</td>
+          <td>{{ results.Paper_code }}</td>
+          <td>{{ results.Paper_name }}</td>
+          <td>{{ results.Mark }}</td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="4">No results in the database. <a href="{% url 'results_add' %}">Add another set of results</a>.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>complaint</h1>
+    <table>
+        <thead>
+            <tr>
+            <th>Reg number</th>
+            <th>Faculty</th>
+            <th>Course</th>
+            <th>Current Year</th>
+            <th>Email</th>
+            <th>Phone Number</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in student %}
+                <tr>
+                    <td>{{ student.Registration_number }}</td>
+                    <td>{{ student.Faculty }}</td>
+                    <td>{{ student.Course }}</td>
+                    <td>{{ student.Current_Year }}</td>
+                    <td>{{ student.Email }}</td>
+                    <td>{{ student.Phone_Number }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <ul>
+        {% for student in students %}
+            <li>{{ student.Registration_number }}, {{student.Faculty}}, {{student.Course}}, {{student.Current_Year}}, {{student.Email}}, {{student.Phone_number}}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
