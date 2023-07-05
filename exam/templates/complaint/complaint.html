@@ -4,6 +4,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {{ redirect_to_login_immediately }}
     {% load static %}
     {% load crispy_forms_tags %}
     <meta charset="UTF-8">
@@ -16,13 +17,20 @@
     
     <div class="main">
         <div class="heading">
+            {% if msg %}
+                {% for message in messages %}
+                    <div class="alert alert-success" role="alert">
+                        {{msg}}
+                    </div>
+                {% endfor %}
+            {% endif %}
             <div class="head">
                 <h1>Complaint Registration Form</h1>
             </div>
             <div class="form-control">
               <form method="POST">
                   {% csrf_token %}
-                  {{form|crispy}}
+                  {{form.as_p}}
                   <button type="submit" class="btn btn-primary">SUBMIT</button>
               </form>
             </div>

@@ -3,6 +3,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {{ redirect_to_login_immediately }}
     {% load static %}
     {% load crispy_forms_tags %}
     <meta charset="UTF-8">
@@ -12,11 +13,18 @@
     <title>Exam office</title>
 </head>
 <body class="examoffice">
+    <ul class="list">
+        <li class="link">Home</li>
+        <li class="link">Approved</li>
+        <li class="link">Received</li>
+        <li class="link">Retrived</li>
+    </ul>
+
     
     <div class="mainexamoffice">
         <div class="complaintexam">
             <h1>Complaints</h1>
-           
+            <hr>
             <table class="table table-striped">
                 <thead>
                     <th scope="col">Complaint id</th>
@@ -27,22 +35,25 @@
                 <tbody>
                     {% for complaint in complaint %}
                         <tr>
-                            <th scope="row">{{complaint.id}}</th>
+                            <th scope="row">{{complaint.Complaint_id}}</th>
                             <td>{{complaint.Date}}</td>
                             <td>{{complaint.Registration_number}}</td>
                             <td>{{complaint.Complaint_type}}</td>
+                            
                             <td>
-                               <!-- Button trigger modal -->
+                                <!-- Button trigger modal -->
                                 <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#exampleModal">
-                                    VIEW DETAILS
+                                    <a href="{% url 'edit_complaint_page' complaint.Complaint_id %}">
+                                        <i class="material-icons"></i>
+                                        VIEW DETAILS
+                                    </a>
+                                    
                                 </button>
                             </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
-
-            <button class="btn btn-info">SEND COMPLAINT</button>
         </div>
         
         <div class="headingexam">
@@ -57,12 +68,50 @@
                         {% csrf_token %}
                         {{ form.as_p }}
                         <hr>
-                        <button type="submit" class="btn btn-primary">Filter</button>
+                        <button type="submit" class="btn btn-primary">Check</button>
                         <button class="btn btn-info">CHECK PAYMENT</button>
                     </form>
                 </div>
             </div>
             <hr style="width:80%;">
+
+            <div class="results">
+                {% if queryset %}
+                    <table>
+                        <thead>
+                            <tr>
+                            <th>Reg number</th>
+                            <th>Faculty</th>
+                            <th>Course</th>
+                            <th>Year</th>
+                            <th>Semester</th>
+                            <th>Paper Code</th>
+                            <th>Paper Name</th>
+                            <th>Mark</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <center><h3>RESULTS FOR {{item.Registration_Number}} SELECTED STUDENT</h3></center>
+                            {% for item in queryset %}
+                                <tr>
+                                    <td>{{ item.Registration_Number }}</td>
+                                    <td>{{ item.Faculty }}</td>
+                                    <td>{{ item.Course }}</td>
+                                    <td>{{ item.Year }}</td>
+                                    <td>{{ item.Semester }}</td>
+                                    <td>{{ item.Paper_Code }}</td>
+                                    <td>{{ item.Paper_Name }}</td>
+                                    <td>{{ item.Score }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>NO MATCHING RESULTS FOUND.</p>
+                {% endif %}
+            </div>
+        </div>
+
         </div>
     </div>
 
@@ -73,7 +122,7 @@
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">
                         {% for complaint in complaint %} 
-                            Complaint filed by {{complaint.Registration_number}}
+                            Complaint filed by {{complaint.Registration_Number}}
                         {% endfor %}
                     </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -96,9 +145,9 @@
                         <tbody>
                             {% for complaint in complaint %}
                                 <tr>
-                                    <th scope="row">{{complaint.id}}</th>
+                                    <th scope="row">{{complaint.Complaint_id}}</th>
                                     <td>{{complaint.Date}}</td>
-                                    <td>{{complaint.Registration_number}}</td>
+                                    <td>{{complaint.Registration_Number}}</td>
                                     <td>{{complaint.Complaint_type}}</td>
                                     <td>{{complaint.Paper_Code}}</td>
                                     <td>{{complaint.Paper_Name}}</td>
@@ -109,9 +158,15 @@
                             {% endfor %}
                         </tbody>
                     </table>
-                </div>
+                   
+                </div>                
                 <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <div style="float:left;">
+                        <button class="btn btn-info">SEND COMPLAINT</button>
+                    </div>
+                    <div style="float: right;">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
                 </div>
             </div>
         </div>

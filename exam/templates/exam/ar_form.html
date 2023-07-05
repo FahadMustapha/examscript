@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    {{ redirect_to_login_immediately }}
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -41,7 +42,7 @@
       </div>
       <div class="heading">
         <div class="head">
-            <h1>Academic Registra Form</h1>
+            <h1>Academic Registrar Form</h1>
         </div>
         <div class="form-control" id="arForm" data-courses-url="{% url 'ajax_load_courses' %}" data-lecturers-url="{% url 'ajax_load_lecturers' %}" novalidate>
           <form method="POST">

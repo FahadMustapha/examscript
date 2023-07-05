@@ -141,7 +141,46 @@ h1{
   float: left;
   margin-left: 40px;
   margin-right: auto;
+  overflow:auto;
 }
+
+/* exam nav links */
+.list{
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+.link{
+  font-size: large;
+  position: relative;
+  display: inline-block;
+  text-decoration: none;
+  color: #f3eded;
+}
+.link::before, .link::after {
+ content: '';
+ position: absolute;
+ left: 0;
+ width: 100%;
+ height: 2.5px;
+ background-color: #de9f58;
+ transform: scaleX(0);
+ transition: transform 0.25s;
+}
+.link::before{
+  top: -3px;
+  transform-origin: left;
+}
+.link::after{
+  bottom: -3px;
+  transform-origin: right;
+}
+.link:hover::before, .link:hover::after,
+:active::before, :active::after{
+  transform: scaleX(1);
+}
+/* exam nav links */
 
 .studentresults{
   width: 70%;

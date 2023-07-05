@@ -1,8 +1,9 @@
 
 from django.forms import ModelForm
-from .models import Faculty, Course, Student, ExamOffice, AR, Lecturer, Payment, Complaint
+from .models import Faculty, Course, Student, ExamOffice, AR, Lecturer, Payment, Complaint, Results
 from django import forms
-
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 
 
 class FacultyForm(ModelForm):
@@ -38,15 +39,10 @@ class StudentForm(forms.ModelForm):
             self.fields['Course'].queryset = self.instance.Faculty.course_set.order_by('Course_Name')
 
 
-
-
-class FileUploadForm(forms.Form):
-    attachment = forms.FileField()
-class ComplaintForm(forms.ModelForm):
+class ComplaintForm(ModelForm):
     class Meta:
         model = Complaint
         fields = ('Registration_number','Complaint_type','Paper_Code','Paper_Name','Year_Of_Exam', 'Study_mode', 'Semester', 'Session')
-
 
 
 class ARForm(forms.ModelForm):
@@ -101,11 +97,60 @@ class LecturerForm(ModelForm):
             self.fields['Course'].queryset = self.instance.Faculty.course_set.order_by('Course_Name')
 
 
-
-"""
-class PaymentForm(ModelForm):
+class ResultsForm(ModelForm):
     class Meta:
-        model = Payment
+        model = Results
         fields = '__all__'
 
-"""
+
+#users
+class LoginForm(forms.Form):
+    username = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "Username",
+                "class": "form-control"
+            }
+        ))
+    password = forms.CharField(
+        widget=forms.PasswordInput(
+            attrs={
+                "placeholder": "Password",
+                "class": "form-control"
+            }
+        ))
+
+
+class SignUpForm(UserCreationForm):
+    username = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "Username",
+                "class": "form-control"
+            }
+        ))
+    email = forms.EmailField(
+        widget=forms.EmailInput(
+            attrs={
+                "placeholder": "Email",
+                "class": "form-control"
+            }
+        ))
+    password1 = forms.CharField(
+        widget=forms.PasswordInput(
+            attrs={
+                "placeholder": "Password",
+                "class": "form-control"
+            }
+        ))
+    password2 = forms.CharField(
+        widget=forms.PasswordInput(
+            attrs={
+                "placeholder": "Password check",
+                "class": "form-control"
+            }
+        ))
+    
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'password1', 'password2')

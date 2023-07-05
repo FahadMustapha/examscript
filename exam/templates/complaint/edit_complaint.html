@@ -1,24 +1,25 @@
 
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    {{ redirect_to_login_immediately }}
     {% load crispy_forms_tags %}
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="/static/css/group.css" rel="stylesheet" />
-    <title>Edit Faculty</title>
+    <title>Edit Complaint</title>
 </head>
 <body>
-    <h1>Edit- Faculty of {{faculty.Faculty_Name}}</h1>
+    <h1>Edit Complaint for Student {{complaint.Registration_number}}</h1>
     <div class="container">
         <form method="POST">
             {% csrf_token %}
             {{form|crispy}}
 
             <input type="Submit" class="btn btn-primary">
-            <button class="btn btn-warning"><a href="{% url 'add_faculty_page' %}">Cancel</a></button>
+            <button class="btn btn-warning"><a href="{% url 'examoffice_page' %}">Cancel</a></button>
         </form>
     </div>
 </body>

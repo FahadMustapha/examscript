@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {{ redirect_to_login_immediately }}
     {% load static %}
     <link href="/static/css/group.css" rel="stylesheet" />
     <meta charset="UTF-8">
@@ -20,11 +21,28 @@
             <center>
                 <div class="homelinks">
                     <div style="width: 300px;">
-                        <a href="{% url 'student_add' %}">
-                            <button class="homeButtons">EXAM RE-MARK</button>
+                        <a href="{% url 'complaint_page' %}">
+                            <button class="homeButtons">START PROCESS</button>
                         </a>
                     </div>
                     <div>
+                        <a href=""><button class="homeButtons">TRACK COMPLAINT</button>
+                        </a>
+                    </div>
+                    <div>
+                        <a href="{% url 'logout' %}"><button >LOGOUT</button>
+                        </a>
+                    </div>
+                    
+                </div>
+            </center>
+        </div>
+            
+</body>
+</html>
+
+<!--
+    <div>
                         <a href=""><button class="homeButtons" >MISSING MARKS</button>
                         </a>
                     </div>
@@ -32,9 +50,4 @@
                         <a href=""><button class="homeButtons" >RE-TAKE / TAKE</button>
                         </a>
                     </div>
-                </div>
-            </center>
-        </div>
-            
-</body>
-</html>
+-->
