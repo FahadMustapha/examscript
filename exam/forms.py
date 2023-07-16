@@ -1,10 +1,16 @@
 
 from django.forms import ModelForm
-from .models import Faculty, Course, Student, ExamOffice, AR, Lecturer, Payment, Complaint, Results
+from .models import Faculty, Course, AR, Lecturer, Complaint, Results, Accounts
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
+from .models import User
+import random, string
 
+class CustomUserCreationForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ('username', 'password1', 'password')
+        
 
 class FacultyForm(ModelForm):
     class Meta:
@@ -20,30 +26,50 @@ class ExamofficeForm(forms.Form):
     Registration_number = forms.CharField(required=False)
     Paper_Code = forms.CharField(required=False)
 
-class StudentForm(forms.ModelForm):
-    class Meta:
-        model = Student
-        fields = ('Registration_number', 'Faculty', 'Course', 'Current_Year', 'Email', 'Phone_Number')
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['Course'].queryset = Course.objects.none()
-
-        if 'Faculty' in self.data:
-            try:
-                faculty_id = int(self.data.get('Faculty'))
-                self.fields['Course'].queryset = Course.objects.filter(Faculty_id=faculty_id).order_by('Course_Name')
-            except (ValueError, TypeError):
-                pass  # invalid input from the client; ignore and fallback to empty Course queryset
-        elif self.instance.pk:
-            self.fields['Course'].queryset = self.instance.Faculty.course_set.order_by('Course_Name')
-
-
-class ComplaintForm(ModelForm):
+class ExamComplaintForm(forms.ModelForm):
     class Meta:
         model = Complaint
-        fields = ('Registration_number','Complaint_type','Paper_Code','Paper_Name','Year_Of_Exam', 'Study_mode', 'Semester', 'Session')
+        fields = ('Registration_number','Complaint_type','Paper_Code','Paper_Name','Year_Of_Exam', 'Study_System', 'Sem_Qter', 'Session', 'is_exam_office_approved')
 
+class StoreComplaintForm(forms.ModelForm):
+    class Meta:
+        model = Complaint
+        fields = ('Registration_number','Complaint_type','Paper_Code','Paper_Name','Year_Of_Exam', 'Study_System', 'Sem_Qter', 'Session', 'is_store_approved')
+
+
+
+class TrackForm(forms.Form):
+    Track_code = forms.CharField(required=False)
+
+class ComplaintForm(forms.ModelForm):
+    class Meta:
+        model = Complaint
+        fields = ('Registration_number','Complaint_type','Paper_Code','Paper_Name','Year_Of_Exam', 'Study_System', 'Sem_Qter', 'Session')
+
+    def generate_track_code(self):
+        # Generate a unique track code
+        characters = string.ascii_uppercase + string.digits
+        code = ''.join(random.choice(characters) for _ in range(10))
+        while Complaint.objects.filter(track_code=code).exists():
+            code = ''.join(random.choice(characters) for _ in range(10))
+        return code
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.track_code = self.generate_track_code()
+        instance.status = 'Pending'  # Set initial status
+        if commit:
+            instance.save()
+        return instance
+    
+
+
+
+class ArComplaintForm(forms.ModelForm):
+    class Meta:
+        model = Complaint
+        fields = ('Registration_number','Complaint_type','Paper_Code','Paper_Name','Year_Of_Exam', 'Study_System', 'Sem_Qter', 'Session', 'is_ar_approved')
 
 class ARForm(forms.ModelForm):
     class Meta:
@@ -77,7 +103,6 @@ class ARForm(forms.ModelForm):
             self.fields['Lecturer'].queryset = self.instance.Course.Lecturer_set.order_by('Name')
 
 
-
 class LecturerForm(ModelForm):
     class Meta:
         model = Lecturer
@@ -102,6 +127,11 @@ class ResultsForm(ModelForm):
         model = Results
         fields = '__all__'
 
+class AccountsForm(ModelForm):
+    class Meta:
+        model = Accounts
+        fields = ('Registration_Number', 'Faculty', 'Course', 'Paper_Code','Paper_Name','Year', 'Study_System', 'Sem_Qter', 'Session', 'Complaint_type', 'Amount_Paid')
+
 
 #users
 class LoginForm(forms.Form):
@@ -122,17 +152,14 @@ class LoginForm(forms.Form):
 
 
 class SignUpForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ('username', 'password1', 'password2')
+        
     username = forms.CharField(
         widget=forms.TextInput(
             attrs={
                 "placeholder": "Username",
-                "class": "form-control"
-            }
-        ))
-    email = forms.EmailField(
-        widget=forms.EmailInput(
-            attrs={
-                "placeholder": "Email",
                 "class": "form-control"
             }
         ))
@@ -149,8 +176,5 @@ class SignUpForm(UserCreationForm):
                 "placeholder": "Password check",
                 "class": "form-control"
             }
-        ))
+        ))    
     
-    class Meta:
-        model = User
-        fields = ('username', 'email', 'password1', 'password2')

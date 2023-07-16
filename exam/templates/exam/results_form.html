@@ -21,7 +21,7 @@
           <div class="form-control" id="studentForm" data-courses-url="{% url 'ajax_load_courses' %}" novalidate>
               <form method="POST">
                   {% csrf_token %}
-                  {{form.as_p}}
+                  {{form|crispy}}
                   <button type="submit" class="btn btn-primary">Submit</button>
                   <a href="{% url 'home_page' %}">Nevermind</a>
               </form>

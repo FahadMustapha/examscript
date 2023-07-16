@@ -1,40 +1,39 @@
 
+{% if user.is_superuser or user.is_student %}
+    <!-- Content for authenticated users -->
+    <h1>Welcome, {{ user.username }}!</h1>
 
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    {{ redirect_to_login_immediately }}
-    {% load static %}
-    {% load crispy_forms_tags %}
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="/static/css/group.css" rel="stylesheet" />
-    <title>complaint</title>
-</head>
-<body class="student">
-    
-    <div class="main">
-        <div class="heading">
-            {% if msg %}
-                {% for message in messages %}
-                    <div class="alert alert-success" role="alert">
-                        {{msg}}
-                    </div>
-                {% endfor %}
-            {% endif %}
-            <div class="head">
-                <h1>Complaint Registration Form</h1>
-            </div>
-            <div class="form-control">
-              <form method="POST">
-                  {% csrf_token %}
-                  {{form.as_p}}
-                  <button type="submit" class="btn btn-primary">SUBMIT</button>
-              </form>
-            </div>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        {{ redirect_to_login_immediately }}
+        {% load static %}
+        {% load crispy_forms_tags %}
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="/static/css/group.css" rel="stylesheet" />
+        <title>complaint</title>
+    </head>
+    <body class="student">
+        
+        <div class="main">
+            <div class="heading">
+                
+                <div class="head">
+                    <h1>COMPLAINT REGISTRATION FORM</h1>
+                </div>
+                <div class="form-control">
+                    <form method="POST">
+                        {% csrf_token %}
+                        {{form|crispy}}
+                        <button type="submit" class="btn btn-primary">SUBMIT</button>
+                    </form>
+                </div>
+            </div> 
         </div>
-    </div>
-</body>
-</html>
+    </body>
+    </html>
+{% endif %}
+
+

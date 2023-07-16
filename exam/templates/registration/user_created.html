@@ -1,0 +1,24 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    {% load crispy_forms_tags %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/static/css/group.css" rel="stylesheet" />
+    <title>user created</title>
+</head>
+<body class="student">
+    
+    <div class="main">
+        <div class="form-control">
+            <center><p>User successfully created</p>               
+                <a href="{% url 'create_user_page' %}"><button class="btn btn-info">OK</button></a>
+            </center>
+        </div>
+    </div>
+</body>
+</html>

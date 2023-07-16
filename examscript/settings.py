@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'exam',
-    'crispy_forms',
+    'crispy_forms'
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -116,7 +116,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Kampala'
 
 USE_I18N = True
 
@@ -138,9 +138,7 @@ STATICFILES_DIRS = [
 
 #DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads') 
+AUTH_USER_MODEL = "exam.User"
 
 LOGIN_REDIRECT_URL = 'home_page'
 LOGOUT_REDIRECT_URL = 'login'

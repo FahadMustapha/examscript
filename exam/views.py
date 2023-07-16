@@ -3,19 +3,24 @@ from django.views.generic import ListView, CreateView, UpdateView
 from django.urls import reverse_lazy
 from django.template import loader
 from django.db.models import Q
+#for code generation
+import random, string
+from django.contrib.auth import get_user_model
+from django.utils.datastructures import MultiValueDictKeyError
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from exam.utils import render_to_pdf
 from django.http import HttpResponse
 from django.contrib import messages
 
-from exam.forms import LoginForm, SignUpForm
+from exam.forms import LoginForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 
-from exam.forms import FacultyForm, CourseForm, StudentForm, ComplaintForm, ExamofficeForm, ARForm, LecturerForm, ResultsForm
-from .models import Faculty, Course, Student, ExamOffice, Complaint, AR, Lecturer, Payment, Results
+from exam.forms import CustomUserCreationForm, ArComplaintForm, ExamComplaintForm, StoreComplaintForm
+from exam.forms import FacultyForm, CourseForm, ComplaintForm, ExamofficeForm, ARForm, LecturerForm, ResultsForm, TrackForm
+from .models import Faculty, Course, ExamOffice, Complaint, AR, Lecturer, Results, User
 
 from datetime import timedelta
 #redirects the user to login page after automatic session logout
@@ -27,7 +32,7 @@ AUTO_LOGOUT = {
 }
 
 # Create your views here.
-@login_required(login_url='user-login')
+@login_required()
 def home_view(request):
     return render(request, 'home.html')
 
@@ -158,61 +163,115 @@ def edit_course_view(request, course_id):
     }
     return render(request, "course/edit_course.html", context)
 
-
 @login_required
 def delete_course_view(request, course_id):
     course = Course.objects.get(id=course_id)
     course.delete()
     message = "Deleted"
     return redirect(add_course_view)
-#Course form
 
-
-class StudentListView(ListView):
-    model = Student
-    context_object_name = 'people'
-
-
-class StudentCreateView(CreateView):
-    model = Student
-    form_class = StudentForm
-    success_url = reverse_lazy('remark_page')
-class StudentUpdateView(UpdateView):
-    model = Student
-    form_class = StudentForm
-    success_url = reverse_lazy('student_changelist')
 def load_courses(request):
     faculty_id = request.GET.get('faculty')
     courses = Course.objects.filter(Faculty_id=faculty_id).order_by('Course_Name')
     return render(request, 'course_dropdown_list_options.html', {'courses': courses})
 
 
+"""Generate a random track code."""
+def generate_track_code():
+    """Generate a random track code."""
+    length = 10
+    characters = string.ascii_letters + string.digits
+    return ''.join(random.choice(characters) for _ in range(length))
+
+"""
+tracking the status of the complaint
+def track_complaint(request):
+    if request.method == 'POST':
+        track_code = request.POST.get('track_code')
+        form = ComplaintForm(request.GET)
+
+        if form.is_valid():
+            code = form.cleaned_data['Track_code']
+            
+            #form = ComplaintForm(request.GET)  
+            field = form['Track_code']  # Get the field by its name    
+            queryset = Results.objects.all()#
+
+            try:
+                # Retrieve the complaint based on the provided track code
+                complaint = Complaint.objects.get(track_code=track_code)
+
+                # Render a response with the complaint status
+                return render(request, 'complaint/complaint_status.html', {'complaint': complaint})
+
+            except Complaint.DoesNotExist:
+                # Handle case when the track code is not found
+                return render(request, 'track_code_not_found.html')
+        
+    context = {
+        'field': field
+    }
+
+    return render(request, 'complaint/track.html', context)
+"""
+
 
 @login_required
 def complaint_view(request):
-    message =""
-    if request.method == "POST":
-        complaint_form = ComplaintForm(request.POST, request.FILES)
+    message = ""
+    if request.method == 'POST':
+        complaint_form = ComplaintForm(request.POST)
         if complaint_form.is_valid():
-            complaint_form.save()
-            message="Your complaint has been submitted"
+            complaint = complaint_form.save()
 
             complaint_form = ComplaintForm()
-            
+            return render(request, 'messages/success.html', {'complaint': complaint})        
     else:
         complaint_form = ComplaintForm()
-
-    messages.success(request, message)    
-
     complaint = Complaint.objects.all()
 
     context ={
         'form':complaint_form,
         'msg':message,
-        'complaint':complaint, 
+        'complaint':complaint,        
     }
     return render(request, "complaint/complaint.html", context)
 
+
+@login_required
+def track_complaint(request):
+    trackform = TrackForm(request.GET)
+    queryset = Complaint.objects.none()
+
+    if trackform.is_valid():
+        code = trackform.cleaned_data['Track_code']
+                
+        try:
+            #__icontains
+            complaint = Complaint.objects.get(track_code=code)
+            #<span class="material-icons-outlined">done_outline</span>
+            if complaint.is_exam_office_approved == "Pending":
+                complaint.is_exam_office_approved = "Pending"
+            elif complaint.is_exam_office_approved == "Rejected":
+                complaint.is_exam_office_approved = "Rejected"
+            elif complaint.is_exam_office_approved == "Approved":
+                complaint.is_exam_office_approved = "Approved"
+            
+            complaint.save()
+            queryset = [complaint]
+        except Complaint.DoesNotExist:
+            queryset = []
+
+
+    context = {
+        'form': trackform,
+        'queryset': queryset,
+        
+    }#'filtered_complaints':filtered_complaints,
+    return render(request, 'complaint/track.html', context)
+
+
+    
 @login_required
 def complaint_details_view(request, complaint_id):
     message =""
@@ -252,10 +311,55 @@ def complaint_pdf_view(request):
 
 
 
-class ARCreateView(CreateView):
-    model = AR
-    form_class = ARForm
-    success_url = reverse_lazy('ar_page')
+
+def ar_view(request):
+    if request.method == 'POST':
+        form = ARForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('ar_page')
+    else:
+        form = ARForm()
+    filtered_complaints = Complaint.objects.filter(is_exam_office_approved="Pending", is_store_approved="Retrieved")
+    context = {
+        'form': form,
+        'filtered_complaints': filtered_complaints        
+        }
+    return render(request, 'exam/ar_form.html', context)
+
+
+#view for adding the is_ar_approved status tag, indicates that the ar has approved a certain complaint
+def ar_data_view(request, complaint_id):
+    message =""
+    complaint = Complaint.objects.get(Complaint_id=complaint_id)
+
+    if request.method == "POST":
+        complaint_form = ArComplaintForm(request.POST, instance= complaint)
+        if complaint_form.is_valid():
+            complaint_form.save()
+
+            complaint_form = ArComplaintForm()
+            return render(request, 'messages/ar_success_message.html', {'complaint':complaint})
+             
+        else:
+            message = "Entered invalid data"
+        messages.success(request, message)
+    else:
+        complaint_form = ArComplaintForm(instance=complaint)
+    
+    context = {
+        'form': complaint_form,
+        'complaint': complaint,
+        'msg': message,        
+    }
+    return render(request, 'exam/ar_complaint_data.html', context)
+
+def ar_approved_view(request):
+    filtered_complaints = Complaint.objects.filter(is_ar_approved="Approved")
+    return render(request, 'exam/ar_approved.html', {'filtered_complaints':filtered_complaints})
+
+
+
 
 class LecturerCreateView(CreateView):
     model = Lecturer
@@ -272,6 +376,7 @@ def load_lecturers(request):
 class ResultsListView(ListView):
     model = Results
     context_object_name = 'people'
+
 class ResultsCreateView(CreateView):
     model = Results
     form_class = ResultsForm
@@ -288,7 +393,6 @@ def load_courses(request):
 
 @login_required
 def examoffice_view(request):
-
     form = ExamofficeForm(request.GET)
     queryset = Results.objects.all()
 
@@ -301,7 +405,7 @@ def examoffice_view(request):
         if code:
            queryset = queryset.filter(Paper_Code=code)
 
-    complaint = Complaint.objects.all()
+    complaint = Complaint.objects.filter(is_exam_office_approved="")
 
     context = {
         'form': form,
@@ -310,47 +414,54 @@ def examoffice_view(request):
     }
     return render(request, 'examoffice.html', context)
 
+#view for adding the is_ar_approved status tag, indicates that the ar has approved a certain complaint
+def exam_data_view(request, complaint_id):
+    message =""
+    complaint = Complaint.objects.get(Complaint_id=complaint_id)
 
+    if request.method == "POST":
+        complaint_form = ExamComplaintForm(request.POST, instance= complaint)
+        if complaint_form.is_valid():
+            complaint_form.save()
 
-
-#file upload view
-
-def file_upload(request):
-    if request.method == 'POST':
-        form = ComplaintForm(request.POST, request.FILES)
-        if form.is_valid():
-            Attachment = form.cleaned_data['Attachment']
-            # Save the Attachment to the server
-            with open('exam/uploads/' + Attachment.name, 'wb+') as destination:
-                for chunk in Attachment.chunks():
-                    destination.write(chunk)
-            # Return a response to the user
-            return render(request, 'complaint/complaint.html', {'success': True})
+            complaint_form = ExamComplaintForm()
+            return render(request, 'messages/exam_success_message.html', {'complaint':complaint})
+             
+        else:
+            message = "Entered invalid data"
+        messages.success(request, message)
     else:
-        form = ComplaintForm()
-    return render(request, 'complaint/complaint.html', {'form': form})
-#file upload view
+        complaint_form = ExamComplaintForm(instance=complaint)
+    
+    context = {
+        'form': complaint_form,
+        'complaint': complaint,
+        'msg': message,        
+    }
+    return render(request, 'exam/exam_complaint_data.html', context)
+
+def pending_complaints_view(request):
+    filtered_complaints = Complaint.objects.filter(is_exam_office_approved="Pending")
+    return render(request, 'exam/exam_pending.html', {'filtered_complaints':filtered_complaints})
 
 
 def login_view(request):
     form = LoginForm(request.POST or None)
-
-    msg = None
-
+    msg = ""
     if request.method == "POST":
-
         if form.is_valid():
             username = form.cleaned_data.get("username")
             password = form.cleaned_data.get("password")
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect("/")
+                return redirect("")
             else:
                 msg = 'Invalid credentials'
         else:
-            msg = 'Error validating the form'
-
+            form.add_error(None, 'Invalid username or password')
+    else:
+       form = LoginForm()
     return render(request, "registration/login.html", {"form": form, "msg": msg})
 
 def sign_up_view(request):
@@ -361,92 +472,110 @@ def sign_up_view(request):
             sign_up_form.save()
             message = "User created successfully"
             success = True
-            return redirect("accounts/login.html")
-            
-        else:
-            message = "Invalid Inputs"
-        messages.success(request, message)
-
+            return redirect("accounts/login.html")            
     else:
-        sign_up_form = UserCreationForm()
+        message = "Invalid Inputs"
+        sign_up_form = UserCreationForm()        
+    messages.success(request, message)
+
     context = {
         'form': sign_up_form
     }
     return render(request, 'registration/register.html', context)
 
+User = get_user_model()
+def create_user(request):
+    if request.method == 'POST':
+        try:
+            Registration_Number = request.POST['Registration_Number']
+            username = request.POST['Custom_username']
+            password = request.POST['User_passcode']
+            role = request.POST['role']
 
+            if User.objects.filter(Custom_username=username).exists():
+                return render(request, 'create_user.html', {'error_message': 'Username already exists.'})
+            
+            user = User.objects.create_user(Registration_Number=Registration_Number, Custom_username=username, User_passcode=password)
 
-def register_user_view(request):
-    msg = None
-    success = False
+            if user == "Admin":
+                user.is_superuser = True
+            elif role == 'Student':
+                user.is_student = True
+            elif role == 'Examoffice':
+                user.is_examoffice = True
+            elif role == 'Registrar':
+                user.is_ar = True
+            elif role == 'Accounts':
+                user.is_accounts = True
+            elif role == 'Store':
+                user.is_store = True
 
-    if request.method == "POST":
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get("username")
-            raw_password = form.cleaned_data.get("password1")
-            user = authenticate(username=username, password=raw_password)
+            user.save()
+            redirect('user_created')
+            return render(request, 'registration/user_created.html')
+            
+        except MultiValueDictKeyError:
+            # Handle the case when 'role' key is not present
+            role = None  # Set a default value or handle the error in an appropriate way
 
-            msg = 'User created - please <a href="/login">login</a>.'
-            success = True
+    users = User.objects.all() #just returning all users on the system
 
-            #return redirect("accounts/login.html")
-
-        else:
-            msg = 'Form is not valid'
-    else:
-        form = SignUpForm()
-
-    return render(request, "./register.html", {"form": form, "msg": msg, "success": success})
-
-
-
-
- 
-"""
-def index(request):  
-    if request.method == 'POST':  
-        worker = WorkersForm(request.POST, request.FILES)  
-        if worker.is_valid():  
-            handle_uploaded_file(request.FILES['file'])  
-            return HttpResponse("File uploaded successfuly")  
-    else:  
-        worker = WorkersForm()  
-        return render(request,"index.html",{'form':worker})  
-    
-        
-
-def index(request):  
-    if request.method == 'POST':  
-        complaint = ComplaintForm(request.POST, request.FILES)  
-        if complaint.is_valid():  
-            handle_uploaded_file(request.FILES['Attachment'])  
-            return HttpResponse("File uploaded successfuly")  
-    else:  
-        complaint = ComplaintForm()  
-        return render(request,"complaint/complaint.html",{'form':complaint})  
-    
-
-
-"""
-
-"""payment view
-def payment_view(request):
-    message = ""
-    if request.method == "POST":
-        payment_form = PaymentForm(request.POST)
-        if payment_form.is_valid():
-            payment_form.save()
-            message="Payment received"
-    else:
-        payment_form = PaymentForm()
-
-    messages.success(request, message)
-
-    context ={
-        'form':payment_form,
-        'msg' : message,
+    context = {
+        'users':users,
     }
-    return render(request, "payment.html", context)
-"""
+    return render(request, 'create_user.html', context)
+
+
+#Store views
+@login_required
+def store_view(request):
+    form = ExamofficeForm(request.GET)
+    queryset = Results.objects.all()
+    if form.is_valid():
+        regnumber = form.cleaned_data['Registration_number']
+        code = form.cleaned_data['Paper_Code']
+        
+        if regnumber:
+            queryset = queryset.filter(Registration_Number__icontains=regnumber)
+        if code:
+           queryset = queryset.filter(Paper_Code=code)
+    else:
+        form = ExamofficeForm()
+    filtered_complaints = Complaint.objects.filter(is_exam_office_approved="Pending", is_store_approved="")
+
+    context = {
+        'form': form,
+        'queryset': queryset,
+        'filtered_complaints':filtered_complaints,
+    }
+    return render(request, 'exam/store.html', context)
+
+def retrieved_script(request):
+    filtered_complaints = Complaint.objects.filter(is_store_approved="Retrieved")
+    return render(request, 'exam/retrieved.html', {'filtered_complaints':filtered_complaints})
+
+#view for adding the is_ar_store status tag, indicates that the exam store has approved a certain complaint
+def store_data_view(request, complaint_id):
+    message =""
+    complaint = Complaint.objects.get(Complaint_id=complaint_id)
+
+    if request.method == "POST":
+        complaint_form = StoreComplaintForm(request.POST, instance= complaint)
+        if complaint_form.is_valid():
+            complaint_form.save()
+
+            complaint_form = StoreComplaintForm()
+            return render(request, 'messages/store_success_message.html', {'complaint':complaint})
+             
+        else:
+            message = "Entered invalid data"
+        messages.success(request, message)
+    else:
+        complaint_form = StoreComplaintForm(instance=complaint)
+    
+    context = {
+        'form': complaint_form,
+        'complaint': complaint,
+        'msg': message,        
+    }
+    return render(request, 'exam/store_complaint_data.html', context)

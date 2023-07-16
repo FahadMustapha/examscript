@@ -1,0 +1,22 @@
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    {% load crispy_forms_tags %}
+    <title>Display Data</title>
+</head>
+<body>
+    <h1>Store Display Data:</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{form|crispy}}
+
+        <br>
+        <button type="submit" class="btn btn-primary">SUBMIT</button>
+    </form>
+</body>
+</html>

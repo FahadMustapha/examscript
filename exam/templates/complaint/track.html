@@ -1,0 +1,74 @@
+
+
+{% if user.is_superuser or user.is_student %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    {% load crispy_forms_tags %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/static/css/group.css" rel="stylesheet" />
+    <title>Tracking</title>
+</head>
+<body class="trackbody">
+
+    <div class="track">
+        <div class="trackheading">
+            <div class="trackhead">
+                <h1>TRACK YOUR COMPLAINT STATUS</h1>
+            </div>   
+        
+            <div class="form-control">
+                <form method="get">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <hr>
+                    <button type="submit" class="btn btn-primary">Check</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="trackcomplaint">
+            {% if queryset %}
+                <table class="table-bordered">
+                    <thead class="table thead th">
+                        <tr>
+                            <th scope="col">Reg Number</th>
+                            <th scope="col">Track Code</th>
+                            <th scope="col">Complaint Type</th>
+                            <th scope="col">Paper Code</th>
+                            <th scope="col">Paper Name</th>
+                            <th scope="col">Exam Office</th>
+                            <th scope="col">Store/Script Retrival</th>
+                            <th scope="col">Academic Registrar's Aprroval</th>
+                            <th scope="col">Complaint Resolved</th>
+                        </tr>
+                    </thead>
+                    <tbody class="dataTable">                            
+                        {% for item in queryset %}
+                        <center><h3>COMPLAINT STATUS FOR STUDENT {{item.Registration_number}}</h3></center>
+                            <tr scope="row">
+                                <td>{{ item.Registration_number }}</td>
+                                <td>{{ item.track_code }}</td>
+                                <td>{{ item.Complaint_type }}</td>
+                                <td>{{ item.Paper_Code }}</td>
+                                <td>{{ item.Paper_Name }}</td>
+                                <td>{{ item.is_exam_office_approved }}</td>
+                                <td>{{ item.is_store_approved }}</td>
+                                <td>{{ item.is_ar_approved }}</td>
+                                <td>{{ item.Complaint_Resolved }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <center><p>NO MATCHING TRACKING CODE FOUND.</p></center>
+            {% endif %}
+        </div>
+    </div>
+
+</body>
+</html>
+{% endif %}

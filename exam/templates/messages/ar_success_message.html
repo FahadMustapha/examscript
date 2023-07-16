@@ -1,0 +1,28 @@
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/static/css/group.css" rel="stylesheet" />
+    <title>complaint Approved</title>
+</head>
+<body class="student">
+    
+    <div class="main">
+        <div class="form-control">
+            <center><p>Complaint for</p>
+                <p> {{ complaint.Complaint_id }} </p>                
+                <p>has been {{ complaint.is_ar_approved }}.</p>                
+                <a href="{% url 'ar_page' %}"><button class="btn btn-info">OK</button></a>
+            </center>
+        </div>
+    </div>
+</body>
+</html>

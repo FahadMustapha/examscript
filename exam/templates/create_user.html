@@ -1,0 +1,58 @@
+
+{% if user.is_superuser %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/static/css/group.css" rel="stylesheet" />
+    <title>create_user</title>
+</head>
+<body class="student">
+  <div class="main">
+    <div class="heading">
+      <div class="head">
+        <h1>USER CREATION PAGE</h1>
+      </div>
+    
+      <div class="form-control">
+        <form method="POST">
+          {% csrf_token %}
+          
+          <label for="Registration Number">Registration Number</label>
+          <input type="text" id="RegNumber" name="Registration Number" required>
+    
+          <label for="Username">Custom_username</label>
+          <input type="text" id="Username" name="Username" required>
+    
+          <label for="Password">Password</label>
+          <input type="Password" id="Password" name="Password" required>
+          
+          <label for="role">Role</label>
+          <select name="role" id="role">
+            <option value="dot">.....</option>
+            <option value="Student">Student</option>
+            <option value="Examoffice">Examoffice</option>
+            <option value="Registrar">Registrar</option>
+            <option value="Accounts">Accounts</option>
+            <option value="Store">Store</option>
+          </select>
+    
+          <br />
+          <button type="submit" class="btn btn-primary">CREATE</button>
+          <div class="clearfix"></div>
+        </form>
+        {% if msg %}
+        {% for message in messages %}
+            <div class="alert alert-success" role="alert">
+                {{msg}}
+            </div>
+        {% endfor %}
+    {% endif %}
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+{% endif %}

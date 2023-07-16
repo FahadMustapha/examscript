@@ -1,3 +1,6 @@
+
+
+{% if user.is_superuser or user.is_student %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,23 +13,27 @@
     <title>home</title>
 </head>
 <body class="student">
-    <h1></h1>
+    
     <div class="main">
+        <div id="iuiulogo">
+            <img src="/static/image/logo-white.png" alt="error" style="height: 100px;">
+        </div>
         <div class="heading">
-            <img src="/static/image/logo-white.png" alt="error" style="height: 100px; width: 95%;">
+            <!-- <img src="/static/image/logo-white.png" alt="error" style="height: 100px; width: 95%;"> -->
             <div class="head">
-                <h1>Exam Complaint Application Platform</h1>
+                <h1>STUDENT RESULTS COMPLAINT MANAGEMENT SYSTEM</h1>
             </div>
             
             <center>
                 <div class="homelinks">
-                    <div style="width: 300px;">
+                    <div>
                         <a href="{% url 'complaint_page' %}">
                             <button class="homeButtons">START PROCESS</button>
                         </a>
                     </div>
                     <div>
-                        <a href=""><button class="homeButtons">TRACK COMPLAINT</button>
+                        <a href="{% url 'tracking' %}">
+                            <button class="homeButtons">TRACK COMPLAINT</button>
                         </a>
                     </div>
                     <div>
@@ -40,14 +47,4 @@
             
 </body>
 </html>
-
-<!--
-    <div>
-                        <a href=""><button class="homeButtons" >MISSING MARKS</button>
-                        </a>
-                    </div>
-                    <div>
-                        <a href=""><button class="homeButtons" >RE-TAKE / TAKE</button>
-                        </a>
-                    </div>
--->
+{% endif %}

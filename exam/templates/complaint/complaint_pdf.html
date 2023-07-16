@@ -1,29 +1,31 @@
 
-<html>
-<head>
-    <title>Download Pdf</title>
-</head>
-<body>
-    <h3><center>Complants' List</center></h3>
-    <table class="table table-striped">
-        <thead>
-            <th scope="col">Complaint id</th>
-            <th scope="col">Faculty</th>
-            <th scope="col">Course Name</th>
-            <th scope="col">Course Code</th>
-            <th scope="col">Course Duration</th>
-        </thead>
-        <tbody>
-            {% for complaint in complaint %}
-                <tr>
-                    <th scope="row">{{complaint.id}}</th>
-                    <td>{{complaint.Faculty}}</td>
-                    <td>{{complaint.Course_Name}}</td>
-                    <td>{{complaint.Course_Code}}</td>
-                    <td>{{complaint.Course_Duration}}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-</html>
+{% if user.is_authenticated %}
+    <html>
+    <head>
+        <title>Download Pdf</title>
+    </head>
+    <body>
+        <h3><center>COMPLAINT'S LIST</center></h3>
+        <table class="table table-striped">
+            <thead>
+                <th scope="col">Complaint id</th>
+                <th scope="col">Faculty</th>
+                <th scope="col">Course Name</th>
+                <th scope="col">Course Code</th>
+                <th scope="col">Course Duration</th>
+            </thead>
+            <tbody>
+                {% for complaint in complaint %}
+                    <tr>
+                        <th scope="row">{{complaint.id}}</th>
+                        <td>{{complaint.Faculty}}</td>
+                        <td>{{complaint.Course_Name}}</td>
+                        <td>{{complaint.Course_Code}}</td>
+                        <td>{{complaint.Course_Duration}}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </body>
+    </html>
+{% endif %}

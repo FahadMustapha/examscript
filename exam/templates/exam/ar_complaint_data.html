@@ -1,0 +1,20 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    {% load crispy_forms_tags %}
+    <title>ar Data</title>
+</head>
+<body>
+    <h1>Academic Registrar Display Data:</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{form|crispy}}
+
+        <br>
+        <button type="submit" class="btn btn-outline-success">APPROVE COMPLAINT</button>
+    </form>
+</body>
+</html>

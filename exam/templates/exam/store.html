@@ -1,0 +1,134 @@
+
+
+{% if user.is_superuser or user.is_store %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {{ redirect_to_login_immediately }}
+    {% load static %}
+    {% load crispy_forms_tags %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/static/css/group.css" rel="stylesheet" />
+    <title>Store</title>
+</head>
+<body class="examoffice">
+    <div class="stickyheader">
+        <h3>IUIU EXAMINATIONS STORE/ARCHIEVES OFFICE</h3>
+    </div>
+    <div id="stickybar">
+        <a class="active">Received</a>      
+        <a href="{% url 'retrieved_scripts' %}">Retrived</a>    
+    </div>
+    
+    <div class="examcontent">
+
+        <div class="mainexamoffice">
+            <div class="complaintexam">
+                <h1>COMPLAINTS FOR RETRIVAL</h1>
+                <hr>
+                <table class="table table-striped">
+                    <thead>
+                        <th scope="col">Complaint id</th>
+                        <th scope="col">Complaint Date</th>
+                        <th scope="col">Registration Number</th>
+                        <th scope="col">Complaint Type</th>
+                    </thead>
+                    <tbody>
+                        {% for filtered_complaints in filtered_complaints %}
+                            <tr>
+                                <th scope="row">{{filtered_complaints.Complaint_id}}</th>
+                                <td>{{filtered_complaints.Date}}</td>
+                                <td>{{filtered_complaints.Registration_number}}</td>
+                                <td>{{filtered_complaints.Complaint_type}}</td>
+                                
+                                <td>
+                                    <a href="{% url 'store_display_page' filtered_complaints.Complaint_id %}">
+                                        <button class="btn btn-outline-primary">VIEW DETAILS</button>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="headingexam">
+                <div class="headexam">
+                    <h1>STORE/ARCHIEVES OFFICE</h1>
+                </div>            
+                <div class="studentresults">
+                    <div class="form-control">
+                        <h3>Check for Student's Exam Script</h3>
+                        <hr>
+                        <form method="get">
+                            {% csrf_token %}
+                            {{ form|crispy }}
+                            <hr>
+                            <button type="submit" class="btn btn-primary">CHECK SCRIPT</button>
+                        </form>
+                    </div>
+                </div>
+                <hr style="width:80%;">
+    
+                <div class="results">
+                    {% if queryset %}
+                        <table>
+                            <thead>
+                                <tr>
+                                <th>Reg number</th>
+                                <th>Faculty</th>
+                                <th>Course</th>
+                                <th>Year</th>
+                                <th>Semester</th>
+                                <th>Paper Code</th>
+                                <th>Paper Name</th>
+                                <th>Script Number</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <center><h3>EXAM SCRIPT FOR {{item.Registration_Number}} SELECTED STUDENT</h3></center>
+                                {% for item in queryset %}
+                                    <tr>
+                                        <td>{{ item.Registration_Number }}</td>
+                                        <td>{{ item.Faculty }}</td>
+                                        <td>{{ item.Course }}</td>
+                                        <td>{{ item.Academic_Year }}</td>
+                                        <td>{{ item.Study_System }}</td>
+                                        <td>{{ item.Paper_Code }}</td>
+                                        <td>{{ item.Paper_Name }}</td>
+                                        <td>{{ item.Script_number }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <p>NO MATCHING RESULTS FOUND.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+    
+    
+
+    <script>
+        window.onscroll = function() {myFunction()};
+        
+        var navbar = document.getElementById("stickybar");
+        var sticky = navbar.offsetTop;
+        
+        function myFunction() {
+        if (window.pageYOffset >= sticky) {
+            navbar.classList.add("sticky")
+        } else {
+            navbar.classList.remove("sticky");
+        }
+        }
+    </script>
+
+</body>
+</html>
+{% endif %}

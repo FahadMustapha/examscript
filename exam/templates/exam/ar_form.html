@@ -1,4 +1,5 @@
 
+{% if user.is_superuser or user.is_ar %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -12,8 +13,9 @@
     <title>Academic Registra</title>
   </head>
   <body class="student">
-    <div class="main">
-      <div class="complaint">
+    <div class="armain">
+      <div class="arcomplaint">
+        <h1>COMPLAINTS FOR APPROVAL</h1>
         <table class="table table-striped">
           <thead>
               <th scope="col">Complaint id</th>
@@ -22,27 +24,27 @@
               <th scope="col">Complaint Type</th>
           </thead>
           <tbody>
-              {% for complaint in complaint %}
-                  <tr>
-                      <th scope="row">{{complaint.id}}</th>
-                      <td>{{complaint.Date}}</td>
-                      <td>{{complaint.Registration_number}}</td>
-                      <td>{{complaint.Complaint_type}}</td>
-                      <td>
-                         <!-- Button trigger modal -->
-                          <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#exampleModal">
-                              VIEW DETAILS
-                          </button>
-                      </td>
-                  </tr>
-              {% endfor %}
+            {% for filtered_complaints in filtered_complaints %}
+              <tr>
+                <th scope="row">{{filtered_complaints.Complaint_id}}</th>
+                <td>{{filtered_complaints.Date}}</td>
+                <td>{{filtered_complaints.Registration_number}}</td>
+                <td>{{filtered_complaints.Complaint_type}}</td>
+                <td>
+                  <a href="{% url 'ar_display_page' filtered_complaints.Complaint_id %}">
+                    <button  class="btn btn-success">VIEW DETAILS</button>
+                  </a>
+                </td>
+              </tr>
+              {% empty %}
+                <center><h4>No objects found.</h4></center>
+            {% endfor %}
           </tbody>
       </table>
-        <button class="btn btn-success">APPROVE COMPLAINT</button>
       </div>
-      <div class="heading">
+      <div class="arheading">
         <div class="head">
-            <h1>Academic Registrar Form</h1>
+            <h1>ACADEMIC REGISTRAR FORM</h1>
         </div>
         <div class="form-control" id="arForm" data-courses-url="{% url 'ajax_load_courses' %}" data-lecturers-url="{% url 'ajax_load_lecturers' %}" novalidate>
           <form method="POST">
@@ -58,62 +60,7 @@
       </div>
     </div>
 
-
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-          <div class="modal-content">
-              <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLabel">
-                      {% for complaint in complaint %} 
-                          Complaint filed by {{complaint.Registration_number}}
-                      {% endfor %}
-                  </h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                  </button>
-              </div>
-              <div class="modal-body">
-                <table border="3">
-                  <thead>
-                    <th scope="col">Complaint id</th>
-                    <th scope="col">Complaint Date</th>
-                    <th scope="col">Registration Number</th>
-                    <th scope="col">Complaint Type</th>
-                    <th scope="col">Paper Code</th>
-                    <th scope="col">Paper Name</th>
-                    <th scope="col">Year of Exam</th>
-                    <th scope="col">Semester</th>
-                    <th scope="col">Session</th>
-                  </thead>
-                  <tbody>
-                    {% for complaint in complaint %}
-                      <tr>
-                        <th scope="row">{{complaint.id}}</th>
-                        <td>{{complaint.Date}}</td>
-                        <td>{{complaint.Registration_number}}</td>
-                        <td>{{complaint.Complaint_type}}</td>
-                        <td>{{complaint.Paper_Code}}</td>
-                        <td>{{complaint.Paper_Name}}</td>
-                        <td>{{complaint.Year_Of_Exam}}</td>
-                        <td>{{complaint.Semester}}</td>
-                        <td>{{complaint.Session}}</td>                      
-                      </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              </div>
-          </div>
-      </div>
-  </div>
-
   {% include 'includes/scripts.html' %}
-
-
-  
 
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script>
@@ -151,7 +98,6 @@
 
       });
     </script>
-
   </body>
 </html>
-
+{% endif %}

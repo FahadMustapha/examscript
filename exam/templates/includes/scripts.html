@@ -36,3 +36,18 @@
   <script src="/static/assets/js/plugins/chartist.min.js"></script>
   <!--  Notifications Plugin    -->
   <script src="/static/assets/js/plugins/bootstrap-notify.js"></script>
+
+  <script>
+    window.onscroll = function() {myFunction()};
+    
+    var navbar = document.getElementById("stickybar");
+    var sticky = navbar.offsetTop;
+    
+    function myFunction() {
+    if (window.pageYOffset >= sticky) {
+        navbar.classList.add("sticky")
+    } else {
+        navbar.classList.remove("sticky");
+    }
+    }
+</script>
