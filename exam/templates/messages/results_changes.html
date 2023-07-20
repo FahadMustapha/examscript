@@ -1,5 +1,7 @@
 
 
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,17 +10,16 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="/static/css/group.css" rel="stylesheet" />
-    <title>complaint Approved</title>
+    <title>edit results</title>
 </head>
 <body class="student">
     
     <div class="main">
         <div class="form-control">
-            <center><p>Complaint for</p>
-                <p> {{ complaint.Complaint_id }} </p>                
-                <p>has been sent to the Archieve office</p> 
-                <p>for Retrieval</p>              
-                <a href="{% url 'examoffice_page' %}"><button class="btn btn-info">OK</button></a>
+            <center><p>Changes for results of</p>
+                <p>Student {{ results.Registration_Number }} </p>                
+                <p> have been saved</p>   
+                <a href="{% url 'add_results_page' %}"><button class="btn btn-info">OK</button></a>
             </center>
         </div>
     </div>

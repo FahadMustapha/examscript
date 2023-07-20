@@ -1,6 +1,4 @@
 
-
- 
  <!DOCTYPE html>
  <html lang="en">
  <head>
@@ -11,24 +9,24 @@
      <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons" />
      <link href="/static/assets/css/material-dashboard.css?v=2.1.2" rel="stylesheet" />
  
-     <title>Payments</title>
+     <title>results</title>
  </head>
  <body>
  
-     <h1>Students' Payment Details</h1>
+     <h1>Result Details</h1>
     <BR></BR>
      <!-- Button trigger modal -->
      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-         RECORD PAYMENT
+         ADD RESULTS
      </button>
  
-     <a href="{% url 'payments_pdf_page' %}">
-         <button class="btn btn-info">Download payments' report</button>
+     <a href="{% url 'results_pdf_page' %}">
+         <button class="btn btn-info">Download Pdf</button>
      </a><BR><BR></BR></BR>
-     <H2>PAYMENTS DATABASE</H2>
+     <H2>RESULTS DATABASE</H2>
      <table class="table table-striped">
          <thead>
-          <form method="GET" action="{% url 'add_payment' %}">
+          <form method="GET" action="{% url 'add_results_page' %}">
             <div>
                 <label style="color: black;" for="registration_number">Registration Number:</label>
                 <input type="text" id="registration_number" name="Registration_Number">
@@ -37,7 +35,7 @@
                 <label style="color: black;" for="paper_code">Paper Code:</label>
                 <input type="text" id="paper_code" name="Paper_Code">
             </div>
-            <button type="submit" class="btn btn-primary">CHECK PAYMENT</button>
+            <button type="submit" class="btn btn-primary">CHECK RESULTS</button>
         </form>
         
           <tr>
@@ -49,39 +47,32 @@
             <th>Semester| Quarter</th>
             <th>Paper Code</th>
             <th>Paper Name</th>
-            <th>Session</th>
-            <th>Complaint Type</th>
-            <th>Amount Paid</th>
+            <th>Score</th>
+            <th>Exam Script Number</th>
           </tr>
          </thead>
          <tbody>
-            {% for payments in payments %}
+            {% for results in results %}
                 <tr>
-                  <td>{{ payments.Registration_Number }}</td>
-                  <td>{{ payments.Faculty }}</td>
-                  <td>{{ payments.Course }}</td>
-                  <td>{{ payments.Academic_Year }}</td>
-                  <td>{{ payments.Study_System }}</td>
-                  <td>{{ payments.Sem_Qter }}</td>
-                  <td>{{ payments.Paper_Code }}</td>
-                  <td>{{ payments.Paper_Name }}</td>
-                  <td>{{ payments.Session }}</td>
-                  <td>{{ payments.Complaint_type }}</td>
-                  <td>{{ payments.Amount_Paid }}</td>
-                  <td>
-                    <a href="{% url 'payments_pdf_page' %}">
-                      <button class="btn btn-info">Download Report</button>
-                    </a>
-                  </td>
-                  <td>
-                    <a href="{% url 'edit_payment' payments.id %}">
-                        <i class="material-icons">edit</i>
-                    </a> |
-                    <a href="{% url 'delete_payment' payments.id %}"
-                        onclick="return confirm('Press OK to delete this Set of Results')">
-                        <i class="material-icons">delete_sweep</i>
-                    </a>
-                  </td>
+                  <td>{{ results.Registration_Number }}</td>
+                  <td>{{ results.Faculty }}</td>
+                  <td>{{ results.Course }}</td>
+                  <td>{{ results.Academic_Year }}</td>
+                  <td>{{ results.Study_System }}</td>
+                  <td>{{ results.Sem_Qter }}</td>
+                  <td>{{ results.Paper_Code }}</td>
+                  <td>{{ results.Paper_Name }}</td>
+                  <td>{{ results.Score }}</td>
+                  <td>{{ results.Script_number }}</td>
+                    <td>
+                      <a href="{% url 'edit_results_page' results.id %}">
+                          <i class="material-icons">edit</i>
+                      </a> |
+                      <a href="{% url 'delete_results_page' results.id %}"
+                          onclick="return confirm('Press OK to delete this Set of Results')">
+                          <i class="material-icons">delete_sweep</i>
+                      </a>
+                    </td>
                 </tr>
             {% endfor %}
          </tbody>
@@ -92,7 +83,7 @@
      <div class="modal-dialog" role="document">
        <div class="modal-content">
          <div class="modal-header">
-           <h5 class="modal-title" id="exampleModalLabel">Record Students' Payment</h5>
+           <h5 class="modal-title" id="exampleModalLabel">Add Students' Results</h5>
            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
              <span aria-hidden="true">&times;</span>
            </button>

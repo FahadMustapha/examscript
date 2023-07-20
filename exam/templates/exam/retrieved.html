@@ -41,6 +41,11 @@
                         <td>{{filtered_complaints.Study_System}}</td>
                         <td>{{filtered_complaints.Sem_Qter}}</td>
                         <td>{{filtered_complaints.Session}}</td>
+                        <td>
+                            <a href="{% url 'exam_to_ar_page' filtered_complaints.Complaint_id %}">
+                                <button class="btn btn-outline-primary">VIEW DETAILS</button>
+                            </a>
+                        </td>
                     </tr>
                     {% empty %}
                         <center><h4>No Exam scripts retrieved at the moment.</h4></center>

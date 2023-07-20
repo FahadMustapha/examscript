@@ -1,0 +1,38 @@
+<html>
+<head>
+    <title>Download Pdf</title>
+</head>
+<body>
+    <h3><center>Results' List</center></h3>
+    <table class="table table-striped">
+        <thead>
+            <th>Registrtion Number</th>
+            <th>Faculty</th>
+            <th>Course</th>
+            <th>Academic Year</th>
+            <th>Study System</th>
+            <th>Semester| Quarter</th>
+            <th>Paper Code</th>
+            <th>Paper Name</th>
+            <th>Score</th>
+            <th>Exam Script Number</th>
+        </thead>
+        <tbody>
+            {% for results in results %}
+                <tr>
+                    <td>{{ results.Registration_Number }}</td>
+                    <td>{{ results.Faculty }}</td>
+                    <td>{{ results.Course }}</td>
+                    <td>{{ results.Academic_Year }}</td>
+                    <td>{{ results.Study_System }}</td>
+                    <td>{{ results.Sem_Qter }}</td>
+                    <td>{{ results.Paper_Code }}</td>
+                    <td>{{ results.Paper_Name }}</td>
+                    <td>{{ results.Score }}</td>
+                    <td>{{ results.Script_number }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

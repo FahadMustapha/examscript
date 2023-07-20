@@ -31,18 +31,23 @@
                 </thead>
                 <tbody>
                     {% for filtered_complaints in filtered_complaints %}
-                    <tr>
-                        <th scope="row">{{filtered_complaints.Complaint_id}}</th>
-                        <td>{{filtered_complaints.Date}}</td>
-                        <td>{{filtered_complaints.Registration_number}}</td>
-                        <td>{{filtered_complaints.Complaint_type}}</td>
-                        <td>{{filtered_complaints.Paper_Code}}</td>
-                        <td>{{filtered_complaints.Paper_Name}}</td>
-                        <td>{{filtered_complaints.Year_Of_Exam}}</td>
-                        <td>{{filtered_complaints.Study_System}}</td>
-                        <td>{{filtered_complaints.Sem_Qter}}</td>
-                        <td>{{filtered_complaints.Session}}</td>
-                    </tr>
+                        <tr>
+                            <th scope="row">{{filtered_complaints.Complaint_id}}</th>
+                            <td>{{filtered_complaints.Date}}</td>
+                            <td>{{filtered_complaints.Registration_number}}</td>
+                            <td>{{filtered_complaints.Complaint_type}}</td>
+                            <td>{{filtered_complaints.Paper_Code}}</td>
+                            <td>{{filtered_complaints.Paper_Name}}</td>
+                            <td>{{filtered_complaints.Year_Of_Exam}}</td>
+                            <td>{{filtered_complaints.Study_System}}</td>
+                            <td>{{filtered_complaints.Sem_Qter}}</td>
+                            <td>{{filtered_complaints.Session}}</td>
+                            <td>
+                                <a href="{% url 'resolved_page' filtered_complaints.Complaint_id %}">
+                                  <button  class="btn btn-success">VIEW DETAILS</button>
+                                </a>
+                              </td>
+                        </tr>
                     {% empty %}
                         <center><h4>No complaints approved at the moment.</h4></center>
                     {% endfor %}

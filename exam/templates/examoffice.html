@@ -35,7 +35,7 @@
                         <th scope="col">Complaint id</th>
                         <th scope="col">Complaint Date</th>
                         <th scope="col">Registration Number</th>
-                        <th scope="col">Complaint Type</th>
+                        <th scope="col">Complaint Type</th>                      
                     </thead>
                     <tbody>
                         {% for complaint in complaint %}
@@ -48,7 +48,7 @@
                                     <a href="{% url 'exam_display_page' complaint.Complaint_id %}">
                                         <button class="btn btn-outline-primary">VIEW DETAILS</button>
                                     </a>
-                                </td>
+                                </td>                                
                             </tr>
                         {% endfor %}
                     </tbody>

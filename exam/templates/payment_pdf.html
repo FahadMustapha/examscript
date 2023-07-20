@@ -1,0 +1,43 @@
+
+<html>
+<head>
+    <title>Download Pdf</title>
+</head>
+<body>
+    <h3><center>Payment Details</center></h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+            <th>Registrtion Number</th>
+            <th>Faculty</th>
+            <th>Course</th>
+            <th>Academic Year</th>
+            <th>Study System</th>
+            <th>Semester| Quarter</th>
+            <th>Paper Code</th>
+            <th>Paper Name</th>
+            <th>Session</th>
+            <th>Complaint Type</th>
+            <th>Amount Paid</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for payments in payments %}
+                <tr>
+                  <td>{{ payments.Registration_Number }}</td>
+                  <td>{{ payments.Faculty }}</td>
+                  <td>{{ payments.Course }}</td>
+                  <td>{{ payments.Academic_Year }}</td>
+                  <td>{{ payments.Study_System }}</td>
+                  <td>{{ payments.Sem_Qter }}</td>
+                  <td>{{ payments.Paper_Code }}</td>
+                  <td>{{ payments.Paper_Name }}</td>
+                  <td>{{ payments.Session }}</td>
+                  <td>{{ payments.Complaint_type }}</td>
+                  <td>{{ payments.Amount_Paid }}</td>                  
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

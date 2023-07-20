@@ -35,6 +35,11 @@
                     <button  class="btn btn-success">VIEW DETAILS</button>
                   </a>
                 </td>
+                <td>
+                  <a href="mailto:fahadmusty@gmail.com?subject=Please go to the Exams Office and attend to this student's exam complaint&body=Complaint ID:  {{filtered_complaints.Complaint_id}}%0D%0AComplaint Date:  {{filtered_complaints.Date}}%0D%0ARegistration Number:  {{filtered_complaints.Registration_number}}%0D%0AComplaint Type:  {{filtered_complaints.Complaint_type}}">
+                      <button class="btn btn-outline-primary">SEND EMAIL</button>
+                  </a>
+              </td>
               </tr>
               {% empty %}
                 <center><h4>No objects found.</h4></center>

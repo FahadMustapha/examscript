@@ -32,6 +32,17 @@ class ExamComplaintForm(forms.ModelForm):
         model = Complaint
         fields = ('Registration_number','Complaint_type','Paper_Code','Paper_Name','Year_Of_Exam', 'Study_System', 'Sem_Qter', 'Session', 'is_exam_office_approved')
 
+class ExamToArForm(forms.ModelForm):
+    class Meta:
+        model = Complaint
+        fields = ('Registration_number','Complaint_type','Paper_Code','Paper_Name','Year_Of_Exam', 'Study_System', 'Sem_Qter', 'Session', 'to_ar')
+
+class ExamComplaintResolvedForm(forms.ModelForm):
+    class Meta:
+        model = Complaint
+        fields = ('Registration_number','Complaint_type','Paper_Code','Paper_Name','Year_Of_Exam', 'Study_System', 'Sem_Qter', 'Session', 'Complaint_resolved')
+
+
 class StoreComplaintForm(forms.ModelForm):
     class Meta:
         model = Complaint
@@ -69,7 +80,7 @@ class ComplaintForm(forms.ModelForm):
 class ArComplaintForm(forms.ModelForm):
     class Meta:
         model = Complaint
-        fields = ('Registration_number','Complaint_type','Paper_Code','Paper_Name','Year_Of_Exam', 'Study_System', 'Sem_Qter', 'Session', 'is_ar_approved')
+        fields = ('Registration_number','Complaint_type','Paper_Code','Paper_Name','Year_Of_Exam', 'Study_System', 'Sem_Qter', 'Session', 'Assigned_Lecturer', 'is_ar_approved')
 
 class ARForm(forms.ModelForm):
     class Meta:
@@ -130,8 +141,7 @@ class ResultsForm(ModelForm):
 class AccountsForm(ModelForm):
     class Meta:
         model = Accounts
-        fields = ('Registration_Number', 'Faculty', 'Course', 'Paper_Code','Paper_Name','Year', 'Study_System', 'Sem_Qter', 'Session', 'Complaint_type', 'Amount_Paid')
-
+        fields = '__all__'
 
 #users
 class LoginForm(forms.Form):

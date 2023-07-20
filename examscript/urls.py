@@ -2,9 +2,12 @@
 
 from django.contrib import admin
 from django.urls import path, include
+from exam.views import add_results_view, edit_results_view, delete_results_view, results_pdf_view
 from exam.views import add_faculty_view, edit_faculty_view, delete_faculty_view, faculty_pdf_view
 from exam.views import add_course_view, edit_course_view, delete_course_view, course_pdf_view
-from exam.views import home_view, examoffice_view, complaint_view, complaint_pdf_view, complaint_details_view, track_complaint
+from exam.views import  examoffice_view, exam_to_ar, exam_new_results
+from exam.views import add_payments_view, edit_payments_view, delete_payments_view, payments_pdf_view
+from exam.views import home_view, complaint_view, complaint_pdf_view, complaint_details_view, track_complaint
 from exam.views import create_user, ar_view, ar_data_view, exam_data_view, store_view, store_data_view
 from exam.views import login_view, sign_up_view, retrieved_script, ar_approved_view, pending_complaints_view
 from django.contrib.auth.views import LogoutView, LoginView
@@ -28,6 +31,9 @@ urlpatterns = [
     path('examoffice/', examoffice_view, name="examoffice_page"),
     path('examdata/<int:complaint_id>/', exam_data_view, name="exam_display_page"),
     path('pendingcomplaints/', pending_complaints_view, name="pending_page"),
+    path('examtoar/<int:complaint_id>/', exam_to_ar, name="exam_to_ar_page"),
+    path('complaintresolved/<int:complaint_id>/', exam_new_results, name="resolved_page"),
+
 
     path('store/', store_view, name="store_page"),
     path('storedata/<int:complaint_id>/', store_data_view, name="store_display_page"),
@@ -48,7 +54,6 @@ urlpatterns = [
     path('complaint/complaint/', complaint_view, name="complaint_page"),
     path('complaint/complaint_pdf/', complaint_pdf_view, name="complaint_pdf_page"),
     path('complaint/edit_complaint/<int:complaint_id>/', complaint_details_view, name="edit_complaint_page"),
-
     #track complaint
     path('complaint/track', track_complaint, name='tracking'),
 
@@ -59,15 +64,13 @@ urlpatterns = [
 
     path('lecturer/', views.LecturerCreateView.as_view(), name='lecturer_page'),
 
-    path('resultslist/', views.ResultsListView.as_view(), name='results_changelist'),
-    path('results/', views.ResultsCreateView.as_view(), name='results_add'),
-    path('<int:pk>/', views.ResultsUpdateView.as_view(), name='results_change'),
+    path('results/', add_results_view, name='add_results_page'),
+    path('results/edit_results/<int:results_id>/', edit_results_view, name="edit_results_page"),
+    path('delete_results/<int:results_id>/', delete_results_view, name="delete_results_page"),
+    path('exam/results_pdf/', results_pdf_view, name="results_pdf_page"),
+
+    path('payment/', add_payments_view, name='add_payment'),
+    path('edit_payment/<int:payment_id>/', edit_payments_view, name="edit_payment"),
+    path('delete_payments/<int:payments_id>/', delete_payments_view, name="delete_payment"),
+    path('payments_pdf/', payments_pdf_view, name="payments_pdf_page"),
 ]
-
-
-"""
-    path('complaintslist/', views.ComplaintListView.as_view(), name='complaint_changelist'),
-    path('complaint/', views.ComplaintCreateView.as_view(), name='complaint_page'),
-    path('<int:pk>/', views.ComplaintUpdateView.as_view(), name='complaint_change'),
-    path('ajax/load-session/', views.load_session, name='ajax_load_session'),
-"""

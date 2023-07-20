@@ -5,7 +5,10 @@ from django.template import loader
 from django.db.models import Q
 #for code generation
 import random, string
+
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
+
 from django.utils.datastructures import MultiValueDictKeyError
 
 from django.shortcuts import render, redirect, get_object_or_404
@@ -18,18 +21,9 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 
-from exam.forms import CustomUserCreationForm, ArComplaintForm, ExamComplaintForm, StoreComplaintForm
-from exam.forms import FacultyForm, CourseForm, ComplaintForm, ExamofficeForm, ARForm, LecturerForm, ResultsForm, TrackForm
-from .models import Faculty, Course, ExamOffice, Complaint, AR, Lecturer, Results, User
-
-from datetime import timedelta
-#redirects the user to login page after automatic session logout
-
-AUTO_LOGOUT = {
-    'IDLE_TIME': timedelta(minutes=2),
-    'REDIRECT_TO_LOGIN_IMMEDIATELY': True,
-    'MESSAGE': 'The session has expired. Please login again to continue.',
-}
+from exam.forms import CustomUserCreationForm, ArComplaintForm, ExamComplaintForm, StoreComplaintForm, ExamComplaintResolvedForm, ExamToArForm
+from exam.forms import FacultyForm, CourseForm, ComplaintForm, ExamofficeForm, ARForm, LecturerForm, ResultsForm, TrackForm, AccountsForm
+from .models import Faculty, Course, ExamOffice, Complaint, AR, Lecturer, Results, User, Accounts
 
 # Create your views here.
 @login_required()
@@ -183,37 +177,6 @@ def generate_track_code():
     characters = string.ascii_letters + string.digits
     return ''.join(random.choice(characters) for _ in range(length))
 
-"""
-tracking the status of the complaint
-def track_complaint(request):
-    if request.method == 'POST':
-        track_code = request.POST.get('track_code')
-        form = ComplaintForm(request.GET)
-
-        if form.is_valid():
-            code = form.cleaned_data['Track_code']
-            
-            #form = ComplaintForm(request.GET)  
-            field = form['Track_code']  # Get the field by its name    
-            queryset = Results.objects.all()#
-
-            try:
-                # Retrieve the complaint based on the provided track code
-                complaint = Complaint.objects.get(track_code=track_code)
-
-                # Render a response with the complaint status
-                return render(request, 'complaint/complaint_status.html', {'complaint': complaint})
-
-            except Complaint.DoesNotExist:
-                # Handle case when the track code is not found
-                return render(request, 'track_code_not_found.html')
-        
-    context = {
-        'field': field
-    }
-
-    return render(request, 'complaint/track.html', context)
-"""
 
 
 @login_required
@@ -320,7 +283,7 @@ def ar_view(request):
             return redirect('ar_page')
     else:
         form = ARForm()
-    filtered_complaints = Complaint.objects.filter(is_exam_office_approved="Pending", is_store_approved="Retrieved")
+    filtered_complaints = Complaint.objects.filter(to_ar="Send to Academic Registrar", is_ar_approved="")
     context = {
         'form': form,
         'filtered_complaints': filtered_complaints        
@@ -360,7 +323,6 @@ def ar_approved_view(request):
 
 
 
-
 class LecturerCreateView(CreateView):
     model = Lecturer
     form_class = LecturerForm
@@ -372,19 +334,84 @@ def load_lecturers(request):
     return render(request, 'lecturers_dropdown.html', {'lecturers': lecturers})
 
 
+#Results views
+@login_required
+def add_results_view(request):
+    message =""
+    if request.method == "POST":
+        results_form = ResultsForm(request.POST)
+        if results_form.is_valid():
+            results_form.save()
+            message="Result Added Successfully"            
+    else:
+        results_form = ResultsForm()
 
-class ResultsListView(ListView):
-    model = Results
-    context_object_name = 'people'
+    messages.success(request, message)    
+    registration_number = request.GET.get('Registration_Number')
+    paper_code = request.GET.get('Paper_Code')
 
-class ResultsCreateView(CreateView):
-    model = Results
-    form_class = ResultsForm
-    success_url = reverse_lazy('results_add')
-class ResultsUpdateView(UpdateView):
-    model = Results
-    form_class = ResultsForm
-    success_url = reverse_lazy('results_changelist')
+    if registration_number and paper_code:
+        results = Results.objects.filter(
+            Q(Registration_Number=registration_number) & Q(Paper_Code=paper_code)
+        )
+    else:
+        results = Results.objects.none()
+    context ={
+        'form':results_form,
+        'msg':message,
+        'results':results, 
+    }
+    return render(request, "results/results_form.html", context)
+
+@login_required
+def edit_results_view(request, results_id):
+    message =""
+    results = Results.objects.get(id=results_id)
+
+    if request.method == "POST":
+        results_form = ResultsForm(request.POST, instance= results)
+
+        if results_form.is_valid():
+            results_form.save()
+            message = "Changes saved successfully"
+            # return redirect('me')
+            return render(request, 'messages/results_changes.html')
+        else:
+            message = "Entered invalid data"
+        messages.success(request, message)
+
+    else:
+        results_form = ResultsForm(instance=results)
+    
+    context = {
+        'form': results_form,
+        'results': results,
+        'msg': message,        
+    }
+    return render(request, "results/edit_results.html", context)
+
+@login_required
+def delete_results_view(request, results_id):
+    results = Results.objects.get(id=results_id)
+    results.delete()
+    message = "Deleted"
+    return redirect(add_results_view)
+
+
+@login_required
+def results_pdf_view(request):
+    results = Results.objects.all()
+
+    context = {
+        'results': results
+    }
+    pdf = render_to_pdf("exam/results_pdf.html", context)
+    
+    return HttpResponse(pdf, content_type = "application/pdf")
+
+
+
+
 def load_courses(request):
     faculty_id = request.GET.get('faculty')
     courses = Course.objects.filter(Faculty_id=faculty_id).order_by('Course_Name')
@@ -414,7 +441,7 @@ def examoffice_view(request):
     }
     return render(request, 'examoffice.html', context)
 
-#view for adding the is_ar_approved status tag, indicates that the ar has approved a certain complaint
+#view for adding the is_exam_office_approved status tag, indicates that the exam office has approved a certain complaint
 def exam_data_view(request, complaint_id):
     message =""
     complaint = Complaint.objects.get(Complaint_id=complaint_id)
@@ -443,6 +470,57 @@ def exam_data_view(request, complaint_id):
 def pending_complaints_view(request):
     filtered_complaints = Complaint.objects.filter(is_exam_office_approved="Pending")
     return render(request, 'exam/exam_pending.html', {'filtered_complaints':filtered_complaints})
+
+def exam_to_ar(request, complaint_id):
+    message =""
+    complaint = Complaint.objects.get(Complaint_id=complaint_id)
+
+    if request.method == "POST":
+        complaint_form = ExamToArForm(request.POST, instance= complaint)
+        if complaint_form.is_valid():
+            complaint_form.save()
+
+            complaint_form = ExamToArForm()
+            return render(request, 'messages/examtoar_success.html', {'complaint':complaint})
+             
+        else:
+            message = "Entered invalid data"
+        messages.success(request, message)
+    else:
+        complaint_form = ExamToArForm(instance=complaint)
+    
+    context = {
+        'form': complaint_form,
+        'complaint': complaint,
+        'msg': message,        
+    }
+    return render(request, 'exam/exam_complaint_data.html', context)
+
+def exam_new_results(request, complaint_id):
+    message =""
+    complaint = Complaint.objects.get(Complaint_id=complaint_id)
+
+    if request.method == "POST":
+        complaint_form = ExamComplaintResolvedForm(request.POST, instance= complaint)
+        if complaint_form.is_valid():
+            complaint_form.save()
+
+            complaint_form = ExamComplaintResolvedForm()
+            return render(request, 'messages/complaint_success_message.html', {'complaint':complaint})
+             
+        else:
+            message = "Entered invalid data"
+        messages.success(request, message)
+    else:
+        complaint_form = ExamComplaintResolvedForm(instance=complaint)
+    
+    context = {
+        'form': complaint_form,
+        'complaint': complaint,
+        'msg': message,        
+    }
+    return render(request, 'exam/exam_complaint_data.html', context)
+
 
 
 def login_view(request):
@@ -484,46 +562,75 @@ def sign_up_view(request):
     return render(request, 'registration/register.html', context)
 
 User = get_user_model()
+# def create_user(request):
+#     if request.method == 'POST':
+#         try:
+#             registration_number = request.POST['Registration_Number']
+#             password = request.POST['User_passcode']
+#             role = request.POST['role']
+#         except KeyError:
+#             return render(request, 'create_user.html', {'error_message': 'Missing required fields.'})
+
+#         if User.objects.filter(registration_number=registration_number).exists():
+#             return render(request, 'create_user.html', {'error_message': 'Username already exists.'})
+
+#         user = User.objects.create_user(registration_number=registration_number, User_passcode=password)
+
+#         if role == 'Admin':
+#             user.is_superuser = True
+#         elif role == 'Student':
+#             user.is_student = True
+#         elif role == 'Examoffice':
+#             user.is_examoffice = True
+#         elif role == 'Registrar':
+#             user.is_ar = True
+#         elif role == 'Accounts':
+#             user.is_accounts = True
+#         elif role == 'Store':
+#             user.is_store = True
+
+#         user.save()
+
+#         return redirect('user_created')
+
+#     users = User.objects.all()
+#     context = {'users': users}
+#     return render(request, 'create_user.html', context)
+
+
 def create_user(request):
     if request.method == 'POST':
-        try:
-            Registration_Number = request.POST['Registration_Number']
-            username = request.POST['Custom_username']
-            password = request.POST['User_passcode']
-            role = request.POST['role']
+        registration_number = request.POST.get('Registration_Number')
+        username = request.POST.get('username')
+        password = request.POST.get('User_passcode')
+        role = request.POST.get('role')
 
-            if User.objects.filter(Custom_username=username).exists():
-                return render(request, 'create_user.html', {'error_message': 'Username already exists.'})
-            
-            user = User.objects.create_user(Registration_Number=Registration_Number, Custom_username=username, User_passcode=password)
+        if User.objects.filter(Registration_Number=registration_number).exists():
+            return render(request, 'create_user.html', {'error_message': 'Username already exists.'})
 
-            if user == "Admin":
-                user.is_superuser = True
-            elif role == 'Student':
-                user.is_student = True
-            elif role == 'Examoffice':
-                user.is_examoffice = True
-            elif role == 'Registrar':
-                user.is_ar = True
-            elif role == 'Accounts':
-                user.is_accounts = True
-            elif role == 'Store':
-                user.is_store = True
+        user = User.objects.create_user(Registration_Number=registration_number, User_passcode=password)
 
-            user.save()
-            redirect('user_created')
-            return render(request, 'registration/user_created.html')
-            
-        except MultiValueDictKeyError:
-            # Handle the case when 'role' key is not present
-            role = None  # Set a default value or handle the error in an appropriate way
+        if role == 'Admin':
+            user.is_superuser = True
+        elif role == 'Student':
+            user.is_student = True
+        elif role == 'Examoffice':
+            user.is_examoffice = True
+        elif role == 'Registrar':
+            user.is_ar = True
+        elif role == 'Accounts':
+            user.is_accounts = True
+        elif role == 'Store':
+            user.is_store = True
 
-    users = User.objects.all() #just returning all users on the system
+        user.save()
 
-    context = {
-        'users':users,
-    }
+        return redirect('user_created.html')
+
+    users = User.objects.all()
+    context = {'users': users}
     return render(request, 'create_user.html', context)
+
 
 
 #Store views
@@ -551,7 +658,7 @@ def store_view(request):
     return render(request, 'exam/store.html', context)
 
 def retrieved_script(request):
-    filtered_complaints = Complaint.objects.filter(is_store_approved="Retrieved")
+    filtered_complaints = Complaint.objects.filter(is_store_approved="Retrieved", to_ar="")
     return render(request, 'exam/retrieved.html', {'filtered_complaints':filtered_complaints})
 
 #view for adding the is_ar_store status tag, indicates that the exam store has approved a certain complaint
@@ -579,3 +686,76 @@ def store_data_view(request, complaint_id):
         'msg': message,        
     }
     return render(request, 'exam/store_complaint_data.html', context)
+
+#Payment view
+@login_required
+def add_payments_view(request):
+    message =""
+    if request.method == "POST":
+        payments_form = AccountsForm(request.POST)
+        if payments_form.is_valid():
+            payments_form.save()
+            message="Payment recorded Successfully"            
+    else:
+        payments_form = AccountsForm()
+
+    messages.success(request, message)    
+    registration_number = request.GET.get('Registration_Number')
+    paper_code = request.GET.get('Paper_Code')
+
+    if registration_number and paper_code:
+        payments = Accounts.objects.filter(
+            Q(Registration_Number=registration_number) & Q(Paper_Code=paper_code)
+        )
+    else:
+        payments = Accounts.objects.none()
+    context ={
+        'form':payments_form,
+        'msg':message,
+        'payments':payments, 
+    }
+    return render(request, "payment.html", context)
+
+@login_required
+def edit_payments_view(request, payment_id):
+    message =""
+    payment = Accounts.objects.get(id=payment_id)
+
+    if request.method == "POST":
+        payment_form = AccountsForm(request.POST, instance= payment)
+
+        if payment_form.is_valid():
+            payment_form.save()
+            message = "Changes saved successfully"
+        else:
+            message = "Entered invalid data"
+        messages.success(request, message)
+
+    else:
+        payment_form = AccountsForm(instance=payment)
+    
+    context = {
+        'form': payment_form,
+        'payment': payment,
+        'msg': message,        
+    }
+    return render(request, "edit_payment.html", context)
+
+
+@login_required
+def payments_pdf_view(request):
+    payments = Accounts.objects.all()
+
+    context = {
+        'payments': payments
+    }
+    pdf = render_to_pdf("payment_pdf.html", context)    
+    return HttpResponse(pdf, content_type = "application/pdf")
+
+
+@login_required
+def delete_payments_view(request, payments_id):
+    payments = Accounts.objects.get(id=payments_id)
+    payments.delete()
+    message = "Deleted"
+    return redirect(add_payments_view)
