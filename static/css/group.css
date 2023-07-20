@@ -68,7 +68,7 @@ html {
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   width: 300px;
   height: 50px;
-  margin-bottom: 15px;
+  margin-bottom: 30px;
   color: #ffffff;
   background-color: #648760;
 }
@@ -94,27 +94,35 @@ html {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
   -ms-overflow-style: scrollbar;
-}
-
-#iuiulogo{
-  height: 15%;
-  width: 90%;
+  height: 740px;
 }
 
 .main{
-  width: 70%;
+  width: 80%;
   display: flex;  
   justify-content: center;
   align-items: center;
-  height: 80%;
+  height: 100%;
 }
 
-.heading{
+.headinghome{
   width: 70%;
   margin-left: 20px;
   height: 60%;
+  background-color: #f4efef;
+  justify-content: center;
+  align-items: center;
+}
+
+.headhome{
+  background-color: #c5d9c3;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  width: 100%;
+  height: 25%;
+  margin-bottom: 60px;
 }
 
 h1{
@@ -129,8 +137,7 @@ h1{
   font-weight: 400;
   line-height: 1.5;
   color: #212529;
-  background: url('/static/image/half.JPG');
-  backdrop-filter: blur(79px);
+  background: url('/static/image/halfblur.jpg') repeat;
 }
 
 
@@ -142,7 +149,7 @@ h1{
 }
 
 .headingexam{
-  width: 45%;
+  width: 49%;
   float: right;
   height: 100%;
   justify-content: center;
@@ -151,12 +158,25 @@ h1{
 .complaintexam{
   background-color: #fff;
   width: 40%;
-  height: 600px;
+  height: 49%;
   float: left;
   margin-left: 40px;
   margin-right: auto;
+  margin-top: -90px;
   overflow:auto;
 }
+
+.studentresults{
+  width: 70%;
+}
+
+.results{
+  background-color: #d0d783;
+  width: 100%;
+  height: 30%;
+  overflow:auto;
+}
+
 
 /*sticy navbar*/
 .stickyheader {
@@ -207,16 +227,14 @@ h1{
 /*sticy navbar*/
 
 
-.studentresults{
+
+.heading{
   width: 70%;
+  margin-left: 20px;
+  height: 60%;
+  justify-content: center;
+  align-items: center;
 }
-
-.results{
-  background-color: #d0d783;
-  width: 90%;
-  height: fit-content;
-}
-
 
 .head{
   background-color: #c5d9c3;
@@ -224,9 +242,9 @@ h1{
   justify-content: center;
   display: flex;
   width: 100%;
-  height: 18%;
+  height: 25%;
   border-radius: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 60px;
 }
 
 .complaint{
@@ -282,6 +300,7 @@ h1{
   width: 90%;
   height: 50rem;
   display: flex;
+  gap: 40px;
   justify-content: center;
   align-items: center;
 }
@@ -290,7 +309,7 @@ h1{
   height: 40%;
   justify-content: center;
   align-items: center;
-  margin-bottom: 30px;
+  margin-top: 80px;
 }
 .trackhead{
   background-color: #c5d9c3;
@@ -751,7 +770,7 @@ fieldset:disabled a.btn {
 input[type="submit"].btn-block,
 input[type="reset"].btn-block,
 input[type="button"].btn-block {
-  width: 100%;
+  width: 90%;
 }
 
 /* form container css */

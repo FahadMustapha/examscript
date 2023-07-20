@@ -1,0 +1,55 @@
+
+
+{% if user.is_superuser or user.is_store %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {{ redirect_to_login_immediately }}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link href="/static/css/group.css" rel="stylesheet" />
+    <title>resolved</title>
+  </head>
+    <body class="student">
+        <div class="main">
+            <div class="complaint">
+                <h1>RESOLVED COMPLAINTS</h1>
+                <table class="table table-striped">
+                <thead>
+                    <th scope="col">Complaint id</th>
+                    <th scope="col">Submission Date</th>
+                    <th scope="col">Registration Number</th>
+                    <th scope="col">Complaint Type</th>
+                    <th scope="col">Paper Code</th>
+                    <th scope="col">Paper Name</th>
+                    <th scope="col">Year Of Exam</th>
+                    <th scope="col">Study System</th>
+                    <th scope="col">Semester| Quarter</th>
+                    <th scope="col">Session</th>
+                </thead>
+                <tbody>
+                    {% for filtered_complaints in filtered_complaints %}
+                    <tr>
+                        <th scope="row">{{filtered_complaints.Complaint_id}}</th>
+                        <td>{{filtered_complaints.Date}}</td>
+                        <td>{{filtered_complaints.Registration_number}}</td>
+                        <td>{{filtered_complaints.Complaint_type}}</td>
+                        <td>{{filtered_complaints.Paper_Code}}</td>
+                        <td>{{filtered_complaints.Paper_Name}}</td>
+                        <td>{{filtered_complaints.Year_Of_Exam}}</td>
+                        <td>{{filtered_complaints.Study_System}}</td>
+                        <td>{{filtered_complaints.Sem_Qter}}</td>
+                        <td>{{filtered_complaints.Session}}</td>
+                    </tr>
+                    {% empty %}
+                        <center><h4>No Exam scripts retrieved at the moment.</h4></center>
+                    {% endfor %}
+                </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>
+{% endif %}

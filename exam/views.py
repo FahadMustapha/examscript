@@ -318,7 +318,7 @@ def ar_data_view(request, complaint_id):
     return render(request, 'exam/ar_complaint_data.html', context)
 
 def ar_approved_view(request):
-    filtered_complaints = Complaint.objects.filter(is_ar_approved="Approved")
+    filtered_complaints = Complaint.objects.filter(is_ar_approved="Approved", Complaint_resolved="")
     return render(request, 'exam/ar_approved.html', {'filtered_complaints':filtered_complaints})
 
 
@@ -468,7 +468,7 @@ def exam_data_view(request, complaint_id):
     return render(request, 'exam/exam_complaint_data.html', context)
 
 def pending_complaints_view(request):
-    filtered_complaints = Complaint.objects.filter(is_exam_office_approved="Pending")
+    filtered_complaints = Complaint.objects.filter(is_exam_office_approved="Pending", is_store_approved="")
     return render(request, 'exam/exam_pending.html', {'filtered_complaints':filtered_complaints})
 
 def exam_to_ar(request, complaint_id):
@@ -521,6 +521,9 @@ def exam_new_results(request, complaint_id):
     }
     return render(request, 'exam/exam_complaint_data.html', context)
 
+def complaint_resolved(request):
+    filtered_complaints = Complaint.objects.filter(Complaint_resolved="Complaint Resolved")
+    return render(request, 'exam/complaint_resolved.html', {'filtered_complaints':filtered_complaints})
 
 
 def login_view(request):
@@ -599,6 +602,7 @@ User = get_user_model()
 
 
 def create_user(request):
+    message =""
     if request.method == 'POST':
         registration_number = request.POST.get('Registration_Number')
         username = request.POST.get('username')
@@ -608,7 +612,7 @@ def create_user(request):
         if User.objects.filter(Registration_Number=registration_number).exists():
             return render(request, 'create_user.html', {'error_message': 'Username already exists.'})
 
-        user = User.objects.create_user(Registration_Number=registration_number, User_passcode=password)
+        user = User.objects.create_user(username=username, Registration_Number=registration_number, User_passcode=password)
 
         if role == 'Admin':
             user.is_superuser = True
@@ -625,7 +629,7 @@ def create_user(request):
 
         user.save()
 
-        return redirect('user_created.html')
+        message = "User created"
 
     users = User.objects.all()
     context = {'users': users}
@@ -660,6 +664,7 @@ def store_view(request):
 def retrieved_script(request):
     filtered_complaints = Complaint.objects.filter(is_store_approved="Retrieved", to_ar="")
     return render(request, 'exam/retrieved.html', {'filtered_complaints':filtered_complaints})
+
 
 #view for adding the is_ar_store status tag, indicates that the exam store has approved a certain complaint
 def store_data_view(request, complaint_id):

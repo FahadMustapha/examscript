@@ -7,7 +7,7 @@ from exam.views import add_faculty_view, edit_faculty_view, delete_faculty_view,
 from exam.views import add_course_view, edit_course_view, delete_course_view, course_pdf_view
 from exam.views import  examoffice_view, exam_to_ar, exam_new_results
 from exam.views import add_payments_view, edit_payments_view, delete_payments_view, payments_pdf_view
-from exam.views import home_view, complaint_view, complaint_pdf_view, complaint_details_view, track_complaint
+from exam.views import home_view, complaint_view, complaint_pdf_view, complaint_details_view, track_complaint, complaint_resolved
 from exam.views import create_user, ar_view, ar_data_view, exam_data_view, store_view, store_data_view
 from exam.views import login_view, sign_up_view, retrieved_script, ar_approved_view, pending_complaints_view
 from django.contrib.auth.views import LogoutView, LoginView
@@ -21,10 +21,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
     path('sign_up/', sign_up_view, name="sign_up_page"),
-    path('login/', LoginView.as_view(template_name='registration/login.html'), name="login"),
+    path("", LoginView.as_view(template_name='registration/login.html'), name="login"),
     path("logout/", LogoutView.as_view(), name="logout"),
 
-    path("", create_user, name="create_user_page"),
+    path("createuser", create_user, name="create_user_page"),
 
     path('home/', home_view, name="home_page"),
 
@@ -33,7 +33,7 @@ urlpatterns = [
     path('pendingcomplaints/', pending_complaints_view, name="pending_page"),
     path('examtoar/<int:complaint_id>/', exam_to_ar, name="exam_to_ar_page"),
     path('complaintresolved/<int:complaint_id>/', exam_new_results, name="resolved_page"),
-
+    path('resolved/', complaint_resolved, name="resolved"),
 
     path('store/', store_view, name="store_page"),
     path('storedata/<int:complaint_id>/', store_data_view, name="store_display_page"),

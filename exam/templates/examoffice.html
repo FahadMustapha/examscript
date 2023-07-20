@@ -68,7 +68,9 @@
                             {{ form|crispy }}
                             <hr>
                             <button type="submit" class="btn btn-primary">CHECK RESULTS</button>
-                            <button class="btn btn-info">CHECK PAYMENT</button>
+                            <a href="{% url 'add_payment' %}">
+                                <button class="btn btn-info">CHECK PAYMENT</button>
+                            </a>
                         </form>
                     </div>
                 </div>
@@ -79,7 +81,7 @@
                         <table>
                             <thead>
                                 <tr>
-                                <th>Reg number</th>
+                                <th>Registration Number</th>
                                 <th>Faculty</th>
                                 <th>Course</th>
                                 <th>Year</th>
@@ -89,15 +91,16 @@
                                 <th>Mark</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody >
                                 <center><h3>RESULTS FOR {{item.Registration_Number}} SELECTED STUDENT</h3></center>
+                                <hr>
                                 {% for item in queryset %}
                                     <tr>
                                         <td>{{ item.Registration_Number }}</td>
                                         <td>{{ item.Faculty }}</td>
                                         <td>{{ item.Course }}</td>
-                                        <td>{{ item.Year }}</td>
-                                        <td>{{ item.Semester }}</td>
+                                        <td>{{ item.Academic_Year }}</td>
+                                        <td>{{ item.Sem_Qter }}</td>
                                         <td>{{ item.Paper_Code }}</td>
                                         <td>{{ item.Paper_Name }}</td>
                                         <td>{{ item.Score }}</td>
@@ -114,24 +117,24 @@
         </div>
     </div>
 
-  
-    {% include 'includes/scripts.html' %}
+<!--   
+    {% include 'includes/scripts.html' %} -->
  
 
-    <script>
-        window.onscroll = function() {myFunction()};
-        
-        var navbar = document.getElementById("stickybar");
-        var sticky = navbar.offsetTop;
-        
-        function myFunction() {
+<script>
+    window.onscroll = function() {myFunction()};
+    
+    var navbar = document.getElementById("stickybar");
+    var sticky = navbar.offsetTop;
+    
+    function myFunction() {
         if (window.pageYOffset >= sticky) {
             navbar.classList.add("sticky")
         } else {
             navbar.classList.remove("sticky");
         }
-        }
-    </script>
+    }
+</script>
 
 </body>
 </html>

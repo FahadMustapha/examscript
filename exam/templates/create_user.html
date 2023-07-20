@@ -11,6 +11,13 @@
 </head>
 <body class="student">
   <div class="main">
+    {% if msg %}
+        {% for message in messages %}
+            <div class="alert alert-success" role="alert">
+                {{msg}}
+            </div>
+        {% endfor %}
+    {% endif %}
     <div class="heading">
       <div class="head">
         <h1>USER CREATION PAGE</h1>
